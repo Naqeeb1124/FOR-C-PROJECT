@@ -153,3 +153,10 @@ public:
 	virtual void Act();
 };
 
+
+
+class move_shape :public operation {
+public:
+	move_shape(game* r_pGame);
+	virtual void Act();
+};
