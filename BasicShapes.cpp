@@ -121,14 +121,16 @@ polygon::polygon(game* r_pGame, point ref, int r_pline1, int r_pline2, int r_hgh
 
 void polygon::draw() const
 {
-	int x1 = RefPoint.x - (Pline1 / 2), x2 = RefPoint.x + (Pline1 / 2), x3 = RefPoint.x - (Pline2 / 2), x4 = RefPoint.x + (Pline2 / 2), y1 = RefPoint.y + (hght / 2), y2 = RefPoint.y - (hght / 2);
+	int x1 = RefPoint.x - (Pline1 / 2), x2 = RefPoint.x + (Pline1 / 2), x3 = RefPoint.x - (Pline2 / 2), x4 = RefPoint.x + (Pline2 / 2);
+	int y1 = RefPoint.y + (hght / 2), y2 = RefPoint.y - (hght / 2);
+	const int x_coordinates_array[4] = { x3,x1,x2,x4 };
+	const int y_coordinates_array[4] = { y1,y2,y2,y1 };
 
 	window* pW = pGame->getWind();
 	pW->SetPen(borderColor, config.penWidth);
 	pW->SetBrush(fillColor);
-	pW->DrawPolygon(x_coordinates_array, y_coordinates_array, FILLED);
+	pW->DrawPolygon(x_coordinates_array, y_coordinates_array,4, FILLED);
 }
-
 
 void polygon::rotate()
 {
