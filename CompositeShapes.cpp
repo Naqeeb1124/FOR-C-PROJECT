@@ -269,33 +269,29 @@ void Plane::draw() const
 };
 
 void Plane::rotate()
-{
-	point fuselageRef = ref;
-	point noseRef = {ref.x + config.planeShape.fuselageWdth/2,ref.y - config.planeShape.fuselageHeight/2};
-	point tailRef = {ref.x - config.planeShape.fuselageWdth/2, ref.y - config.planeShape.fuselageHeight/2};
+{	point ref = RefPoint;
+	point noseRef = { ref.x + config.planeShape.fuselageWdth / 2,ref.y - config.planeShape.fuselageHeight / 2 };
+	point tailRef = { ref.x - config.planeShape.fuselageWdth / 2, ref.y - config.planeShape.fuselageHeight / 2 };
 	point upWingRef = { ref.x + config.planeShape.fuselageWdth / 10, ref.y - config.planeShape.fuselageHeight / 2 };
 	point lowWingRef = { ref.x + config.planeShape.fuselageWdth / 10, ref.y + config.planeShape.fuselageHeight / 2 };
 	point upStabRef = { ref.x - config.planeShape.fuselageWdth / 2, ref.y - config.planeShape.fuselageHeight / 2 };
 	point lowStabRef = { ref.x - config.planeShape.fuselageWdth / 2, ref.y + config.planeShape.fuselageHeight / 2 };
-	point nose2 = { noseRef.x,noseRef.y + config.planeShape.noseHeight };
-	point nose3 = { noseRef.x + config.planeShape.noseWdth, noseRef.y + config.planeShape.noseHeight / 2 };
-	point tail2 = { tailRef.x,tailRef.y + config.planeShape.tailHeight };
-	point tail3 = {tailRef.x - config.planeShape.tailWdth, tailRef.y + config.planeShape.tailHeight/2};
-	point upWing2 = { upWingRef.x + config.planeShape.wingWidth, upWingRef.y };
-	point upWing3 = {upWingRef.x - config.planeShape.wingSweep,upWingRef.y - config.planeShape.wingHeight};
-	point lowWing2 = {lowWingRef.x + config.planeShape.wingWidth, lowWingRef.y};
-	point lowWing3 = { lowWingRef.x - config.planeShape.wingSweep, lowWingRef.y + config.planeShape.wingHeight };
-	point upStab2 = {upStabRef.x - config.planeShape.stabWdth, upStabRef.y + config.planeShape.fuselageWdth/4};
-	point upstab3 = {upStabRef.x - config.planeShape.stabWdth - config.planeShape.stabSweep, upStabRef.y - config.planeShape.stabHeight};
-	point lowStab2 = { upStabRef.x - config.planeShape.stabWdth, upStabRef.y};
-	point lowStab3 = {lowStabRef.x - config.planeShape.stabWdth - config.planeShape.stabSweep, lowStabRef.y + config.planeShape.stabHeight };
-	fuselage = new Rect(pGame, fuselageRef, config.planeShape.fuselageHeight, config.planeShape.fuselageWdth);
-	nose = new triangle(pGame, noseRef, nose2, nose3);
-	tail = new triangle(pGame, tailRef, tail2, tail3 );
-	upWing = new triangle(pGame, upWingRef, upWing2, upWing3);
-	bottomWing = new triangle(pGame, lowWingRef, lowWing2, lowWing3);
-	upStab = new triangle(pGame, upStabRef, upStab2, upstab3);
-	lowStab = new triangle(pGame, lowStabRef, lowStab2, lowStab3);
+
+	point newNoseRef = multiplyByMatrix(noseRef);
+	point newTailRef = multiplyByMatrix(tailRef);
+	point newUpWingRef = multiplyByMatrix(upWingRef);
+	point newLowWingRef = multiplyByMatrix(lowWingRef);
+	point newUpStabRef = multiplyByMatrix(upStabRef);
+	point newLowStabRef = multiplyByMatrix(lowStabRef);
+
+	fuselage->rotate();
+	nose->rotate();
+	tail->rotate();
+	upWing->rotate();
+	bottomWing->rotate();
+	upStab->rotate();
+	lowStab->rotate();
+
 }
 
 void Plane::resize_up()
