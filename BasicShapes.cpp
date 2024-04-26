@@ -32,6 +32,25 @@ void Rect::rotate()
 	hght = wdth;
 }
 
+void Rect::resize_up()
+{
+	wdth * 2;
+	hght * 2;
+}
+
+void Rect::resize_down()
+{
+	wdth / 2;
+	hght / 2;
+}
+
+void Rect::flip()
+{
+	wdth *= -1;
+	hght *= -1;
+
+}
+
 ////////////////////////////////////////////////////  class circle  ///////////////////////////////////////
 //TODO: Add implementation for class circle here
 circle::circle(game* r_pGame, point ref, int r) :shape(r_pGame, ref)
@@ -47,7 +66,19 @@ void circle::draw() const
 	pW->DrawCircle(RefPoint.x, RefPoint.y, rad, FILLED);
 } //circle doesnt need a rotate function.
 
+void circle::resize_up()
+{
+	rad * 2;
+}
 
+void circle::resize_down()
+{
+	rad / 2;
+}
+
+void circle::flip()
+{
+}
 
 ////////////////////////////////////////////////////  class triangle  ///////////////////////////////////////
 
@@ -87,6 +118,70 @@ void triangle::rotate()
 
 }
 
+
+
+void triangle::resize_up()
+{
+	RefPoint.x *= 2; vertex2.x *= 2; vertex3.x *= 2;
+	RefPoint.y *= 2; vertex2.y *= 2; vertex3.y *= 2;
+}
+
+void triangle::resize_down()
+{
+
+	RefPoint.x /= 2; vertex2.x /= 2; vertex3.x /= 2;
+	RefPoint.y /= 2; vertex2.y /= 2; vertex3.y /= 2;
+}
+
+void triangle::flip()
+{
+	RefPoint.y;
+	vertex2.y;
+	vertex3.y;
+	double factor, factor22, factor3;
+	if (vertex2.y < vertex3.y || vertex2.y == vertex3.y && RefPoint.y >vertex3.y && RefPoint.y > vertex2.y)
+	{
+		factor = RefPoint.y - vertex3.y;
+		factor22 = RefPoint.y - vertex2.y;
+		RefPoint.y -= factor;
+		vertex3.y += factor;
+		vertex2.y += factor22;
+		factor3 = vertex3.y - vertex2.y;
+		vertex3.y -= factor3;
+	}
+
+	else if (vertex2.y > vertex3.y && RefPoint.y > vertex3.y && RefPoint.y > vertex2.y)
+	{
+		factor = RefPoint.y - vertex2.y;
+		factor22 = RefPoint.y - vertex3.y;
+		RefPoint.y -= factor;
+		vertex3.y += factor22;
+		vertex2.y += factor;
+		factor3 = vertex2.y - vertex3.y;
+		vertex2.y -= factor3;
+	}
+	else if (vertex2.y < vertex3.y || vertex2.y == vertex3.y && RefPoint.y < vertex3.y && RefPoint.y < vertex2.y)
+	{
+		factor = vertex3.y - RefPoint.y;
+		factor22 = vertex2.y - RefPoint.y;
+		RefPoint.y += factor;
+		vertex3.y -= factor;
+		vertex2.y -= factor22;
+		factor3 = vertex3.y - vertex2.y;
+		vertex3.y -= factor3;
+	}
+	else if (vertex2.y > vertex3.y || vertex2.y == vertex3.y && RefPoint.y < vertex3.y && RefPoint.y < vertex2.y)
+	{
+		factor = -RefPoint.y + vertex2.y;
+		factor22 = -RefPoint.y + vertex3.y;
+		RefPoint.y += factor;
+		vertex3.y -= factor22;
+		vertex2.y -= factor;
+		factor3 = vertex2.y - vertex3.y;
+		vertex2.y -= factor3;
+	}
+} 
+
 ////////////////////////////////////////////////////  class line  ///////////////////////////////////////
 
 //THIS CLASS HAS BEEN MODIFIED BY ABDELRAHMAN MOHAMED TO BE ABLE TO ROTATE THE LINE.
@@ -108,6 +203,21 @@ void line::rotate()
 {
 	//x1,y1 is the origin so no transformation will occur.
 	lineLength = multiplyByMatrix(lineLength);
+}
+
+void line::resize_up()
+{
+	length * 2;
+}
+
+void line::resize_down()
+{
+	length / 2;
+}
+
+void line::flip()
+{
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,3 +251,28 @@ void polygon::rotate()
 		x_coordinates_array[i] = temp;
 	}
 } //to be rechecked later
+
+
+
+void polygon::resize_up()
+{
+	Pline1 * 2;
+	Pline2 * 2;
+	hght * 2;
+}
+
+void polygon::resize_down()
+{
+
+	Pline1 / 2;
+	Pline2 / 2;
+	hght / 2;
+}
+
+void polygon::flip()
+{
+	int temp;
+	temp = Pline1;
+	Pline1 = Pline2;
+	Pline2 = temp;
+}
