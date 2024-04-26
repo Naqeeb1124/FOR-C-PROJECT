@@ -436,3 +436,46 @@ void operSelectLevel::Act()
 	pGrid->setActiveShape(psh);
 
 }
+
+
+
+move_shape::move_shape(game* r_pGame) :operation(r_pGame)
+{
+}
+
+void move_shape::Act()
+{
+	keytype itempressed;
+	window* pw = pGame->getWind();
+	grid* pg = pGame->getGrid();
+	shape* pe = pg->getactiveshape();
+	char cKeyData;
+	itempressed = pw->GetKeyPress(cKeyData);
+	do {
+		if (itempressed == ARROW)
+		{
+			pg->clearGridArea();
+			switch (cKeyData)
+			{
+			case 2:	//Down Arrow
+				pe->move(up);
+
+				break;
+			case 4:	//left Arrow
+				pe->move(left);
+
+				break;
+			case 6:	//Down Arrow
+				pe->move(right);
+
+				break;
+			case 8:	//Down Arrow
+				pe->move(down);
+
+				break;
+			}
+			pg->draw();
+			pw->UpdateBuffer();
+		}
+	} while (itempressed != ESCAPE);
+}
