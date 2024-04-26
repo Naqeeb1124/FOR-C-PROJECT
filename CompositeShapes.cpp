@@ -25,6 +25,25 @@ void Sign::rotate()
 	point newBaseRef = multiplyByMatrix(baseRef);
 	base->setRefPoint(newBaseRef);
 }
+void Sign::resize_up()
+{
+	base->resize_up();
+	top->resize_up();
+}
+
+void Sign::resize_down()
+{
+	base->resize_down();
+	top->resize_down();
+}
+
+void Sign::flip()
+{
+	point topRef = RefPoint;	//top rect ref is the same as the sign
+	point baseRef = { RefPoint.x, RefPoint.y - config.sighShape.topHeight / 2 - config.sighShape.baseHeight / 2 };
+	top = new Rect(pGame, topRef, config.sighShape.topHeight, config.sighShape.topWdth);
+	base = new Rect(pGame, baseRef, config.sighShape.baseHeight, config.sighShape.baseWdth);
+}
 
 
 
@@ -54,6 +73,31 @@ void House::rotate()
 	roof->rotate();
 
 }
+
+void House::resize_up()
+{
+	base->resize_up();
+	roof->resize_up();
+}
+
+void House::resize_down()
+{
+	base->resize_down();
+	roof->resize_down();
+}
+
+void House::flip()
+{
+	point baseref = RefPoint;
+	point roofRef = { RefPoint.x - config.houseShape.roofWdth / 2, RefPoint.y + config.houseShape.baseHeight / 2 };
+	point roof2 = { roofRef.x + config.houseShape.roofWdth,roofRef.y };
+	point roof3 = { roofRef.x + config.houseShape.roofWdth / 2,roofRef.y - config.houseShape.roofHeight };
+	base = new Rect(pGame, baseref, config.houseShape.baseHeight, config.houseShape.baseWdth);
+	roof = new triangle(pGame, roofRef, roof2, roof3);
+	roof->flip();
+	base->flip();
+}
+
 
 
 // For the car
@@ -92,6 +136,37 @@ void Car::rotate()
 	backTire->rotate();
 }
 
+void Car::flip()
+{
+	point bottomRef = RefPoint;
+	point topRef = { RefPoint.x, RefPoint.y + config.carShape.lowHeight / 2 + config.carShape.upHeight / 2 };
+	point bTireRef = { RefPoint.x - config.carShape.lowWdth / 4, RefPoint.y - config.carShape.lowHeight / 2 };
+	point fTireRef = { RefPoint.x + config.carShape.lowWdth / 4, RefPoint.y - config.carShape.lowHeight / 2 };
+	lowBody = new Rect(pGame, bottomRef, config.carShape.lowHeight, config.carShape.lowWdth);
+	upBody = new polygon(pGame, topRef, config.carShape.upTOPWdth, config.carShape.upBOTWdth, config.carShape.upHeight);
+	frontTire = new circle(pGame, fTireRef, config.carShape.tireRadius);
+	backTire = new circle(pGame, bTireRef, config.carShape.tireRadius);
+	upBody->flip();
+	lowBody->flip();
+}
+
+
+void Car::resize_up()
+{
+	lowBody->resize_up();
+	lowBody->resize_up();
+	lowBody->resize_up();
+	lowBody->resize_up();
+}
+
+void Car::resize_down()
+{
+	lowBody->resize_down();
+	lowBody->resize_down();
+	lowBody->resize_down();
+	lowBody->resize_down();
+}
+
 Boat::Boat(game* r_pGame, point ref) :shape(r_pGame, ref)
 {
 	point hullRef = ref;
@@ -123,6 +198,35 @@ void Boat::rotate()
 	mast->rotate();
 
 }
+
+void Boat::flip()
+{
+	point hullRef = RefPoint;
+	point sailRef = { RefPoint.x - config.boatShape.bHullWdth / 2 - config.boatShape.tHullWdth / 10,RefPoint.y + config.boatShape.hullHeight / 2 };
+	point mastRef = { RefPoint.x - config.boatShape.tHullWdth / 10, RefPoint.y + config.boatShape.hullHeight / 2 };
+	point sail2 = { sailRef.x + config.boatShape.sailWdth, sailRef.y };
+	point sail3 = { sailRef.x + config.boatShape.sailHeight / 2.5, sailRef.y - config.boatShape.hullHeight };
+	hull = new polygon(pGame, hullRef, config.boatShape.tHullWdth, config.boatShape.bHullWdth, config.boatShape.hullHeight);
+	sail = new triangle(pGame, sailRef, sail2, sail3);
+	mast = new line(pGame, mastRef, config.boatShape.mastHeight);
+	hull->flip();
+	sail->flip();
+}
+
+void Boat::resize_up()
+{
+	hull->resize_up();
+	hull->resize_up();
+	hull->resize_up();
+}
+
+void Boat::resize_down()
+{
+	hull->resize_down();
+	hull->resize_down();
+	hull->resize_down();
+}
+
 Plane::Plane(game* r_pGame, point ref) :shape(r_pGame, ref)
 {
 	point fuselageRef = ref;
@@ -193,6 +297,38 @@ void Plane::rotate()
 	upStab = new triangle(pGame, upStabRef, upStab2, upstab3);
 	lowStab = new triangle(pGame, lowStabRef, lowStab2, lowStab3);
 }
+
+void Plane::resize_up()
+{
+	fuselage->resize_up();
+	nose->resize_up();
+	tail->resize_up();
+	upWing->resize_up();
+	bottomWing->resize_up();
+	upStab->resize_up();
+	lowStab->resize_up();
+}
+
+void Plane::resize_down()
+{
+	fuselage->resize_down();
+	nose->resize_down();
+	tail->resize_down();
+	upWing->resize_down();
+	bottomWing->resize_down();
+	upStab->resize_down();
+	lowStab->resize_down();
+}
+
+void Plane::flip()
+{
+	upStab->flip();
+	lowStab->flip();
+	fuselage->flip();
+	nose->flip();
+}
+
+
 arrow::arrow(game* r_pGame, point ref) :shape(r_pGame, ref)
 {
 	point shaftRef = ref;
@@ -218,4 +354,23 @@ void arrow::rotate()
 
 	shaft->rotate();
 	head->rotate();
+}
+
+
+void arrow::resize_up()
+{
+	shaft->resize_up();
+	head->resize_up();
+}
+
+void arrow::resize_down()
+{
+	shaft->resize_down();
+	head->resize_down();
+}
+
+void arrow::flip()
+{
+	shaft->flip();
+	head->flip();
 }
