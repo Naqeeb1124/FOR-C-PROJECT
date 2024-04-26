@@ -107,8 +107,7 @@ void line::draw() const
 void line::rotate()
 {
 	//x1,y1 is the origin so no transformation will occur.
-	lineLength.x = lineLength.y;
-	lineLength.y = -lineLength.x;
+	lineLength = multiplyByMatrix(lineLength);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
