@@ -138,4 +138,4 @@ void polygon::rotate()
 		y_coordinates_array[i] = RefPoint.y + x_coordinates_array[i];
 		x_coordinates_array[i] = temp;
 	}
-}
+} //to be rechecked later
