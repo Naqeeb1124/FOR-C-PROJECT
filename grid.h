@@ -25,5 +25,7 @@ public:
 	void clearGridArea() const;
 	bool addShape(shape* newShape);
 	void setActiveShape(shape* actShape);
+	shape* getactiveshape();
+	void draw_delete() const;
 };
 
