@@ -29,6 +29,9 @@ public:
 	Sign(game* r_pGame, point ref);
 	virtual void draw() const;
 	virtual void rotate();
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 
 };
 
@@ -42,6 +45,9 @@ public:
 	House(game* r_pGame, point ref);
 	virtual void draw() const;
 	virtual void rotate();
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 };
 
 class Car :public shape
@@ -54,6 +60,9 @@ public:
 	Car(game* r_pGame, point ref);
 	virtual void draw() const;
 	virtual void rotate();
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 };
 
 class Boat :public shape
@@ -65,6 +74,9 @@ public:
 	Boat(game* r_pGame, point ref);
 	virtual void draw() const;
 	virtual void rotate();
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 };
 
 class Plane :public shape
@@ -80,6 +92,9 @@ public:
 	Plane(game* r_pGame, point ref);
 	virtual void draw() const;
 	virtual void rotate();
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 };
 
 class arrow :public shape
@@ -90,6 +105,9 @@ public:
 	arrow(game* r_pGame, point ref);
 	virtual void draw() const;
 	virtual void rotate();
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 
 };
 
