@@ -28,6 +28,14 @@ enum ShapeType
 	Arrow, //TOP G ARROW SHOW US THE WAY TO SUCCESS BIG TOP G RAAAAAAAAAAAAAAAAAAAAAAAAAAAH
 };
 
+enum direction
+{
+	right,
+	up,
+	left,
+	down
+};
+
 //Base class for all shapes including Basic shapes, Composite shapes
 class shape
 {
@@ -48,8 +56,10 @@ public:
 	//-- Decide the parameters that you should pass to each function	
 
 	/*virtual void rotate() = 0;*/	//Rotate the shape
-	//virtual void resize() = 0;	//Resize the shape
-	//virtual void move() = 0;		//Move the shape
+	virtual void flip();
+	virtual void resize_up();	//Resize the shape
+	virtual void resize_down();
+	virtual void move(direction dir) ;		//Move the shape
 	//virtual void save(ofstream &OutFile) = 0;	//Save the shape parameters to the file
 	//virtual void load(ifstream &Infile) = 0;	//Load the shape parameters to the file
 
