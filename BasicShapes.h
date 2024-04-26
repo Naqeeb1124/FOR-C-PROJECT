@@ -20,6 +20,9 @@ public:
 	Rect(game* r_pGame, point ref, int r_hght, int r_wdth);
 	virtual void draw() const;
 	virtual void rotate();
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 
 
 };
@@ -34,6 +37,9 @@ class circle :public shape
 public:
 	circle(game* r_pGame, point ref, int r);	//add more parameters for the constructor if needed
 	virtual void draw() const;
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 };
 
 
@@ -47,6 +53,9 @@ public:
 	triangle(game* r_pGame, point ref, point r_vert2, point r_vert3);	//add more parameters for the constructor if needed
 	virtual void draw() const;
 	virtual void rotate();
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 };
 
 ////////////////////////////////////////////////////  class line  ///////////////////////////////////////
@@ -59,6 +68,9 @@ public:
 	line(game* r_pGame, point ref, point length);	//add more parameters for the constructor if needed
 	virtual void draw() const;
 	virtual void rotate();
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 };
 
 ////////////////////////////////////////////////////  class polygon  ///////////////////////////////////////
@@ -75,4 +87,7 @@ public:
 	polygon(game* r_pGame, point ref, int r_pline1, int r_pline2, int r_hght);	//add more parameters for the constructor if needed
 	virtual void draw() const;
 	virtual void rotate();
+	virtual void resize_up();
+	virtual void resize_down();
+	virtual void flip();
 };
