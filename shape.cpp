@@ -16,3 +16,21 @@ void shape::setRefPoint(point p)
 	RefPoint = p;
 }
 
+void shape::move(direction dir)
+{
+	switch (dir)
+	{
+	case right:
+		RefPoint.x += config.gridSpacing;
+		break;
+	case up:
+		RefPoint.y += config.gridSpacing;
+		break;
+	case left:
+		RefPoint.x -= config.gridSpacing;
+		break;
+	case down:
+		RefPoint.y -= config.gridSpacing;
+		break;
+	}
+}
