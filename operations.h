@@ -101,6 +101,14 @@ public:
 
 //---------------------------
 
+class operFlip :public operation
+{
+public:
+	operFlip(game* r_pGame);
+	virtual void Act();
+};
+
+//---------------------------
 class operRefresh :public operation
 {
 public:
