@@ -71,10 +71,22 @@ bool grid::addShape(shape* newShape)
 	return true;
 }
 
-void grid::setActiveShape(shape* actShape)
+
+void grid::setActiveShape(shape* activeShape)
 {
 	activeShape = actShape;
 }
+
+shape* grid::getActiveShape()
+{
+	return activeShape;
+}
+
+//void grid::deleteActiveShape(shape* activeShape)
+//{
+	//delete activeShape;
+	//activeShape = nullptr;   ///Done by Ziad and it will be a comment until we find the problem
+//}
 
 void grid::draw_delete() const
 {
@@ -97,9 +109,6 @@ void grid::draw_delete() const
 }
 
 
-shape* grid::getactiveshape()
-{
-	return activeShape;
-}
+
 
 
