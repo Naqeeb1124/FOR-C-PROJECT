@@ -77,16 +77,16 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 		printMessage("You clicked on the Plane");
 		op = new operAddPlane(this);
 		break;
-	case ITM_ROCKET:
-		printMessage("You clicked on the Rocket");
+	case ITM_ARR:
+		printMessage("You clicked on the Arrow");
 		op = new operAddArrow(this);
 		break;
-	case ITM_TOWER:
-		printMessage("You clicked on the Tower");
+	case ITM_HOUSE:
+		printMessage("You clicked on the House");
 		op = new operAddHouse(this);
 		break;
-	case ITM_TREE:
-		printMessage("You clicked on the Tree");
+	case ITM_SIGN:
+		printMessage("You clicked on the Sign");
 		op = new operAddSign(this);
 		break;
 	case ITM_ZOOMIN:
@@ -100,6 +100,10 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 	case ITM_ROTATE:
 		printMessage("You clicked on the 'Rotate' operation");
 		op = new operRotate(this);
+		break;
+	case ITM_FLIP:
+		printMessage("You clicked on the 'Flip' operation");
+		op = new operFlip(this);
 		break;
 	case ITM_REFRESH:
 		printMessage("You clicked on the 'Refresh' operation");
@@ -125,9 +129,6 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 		printMessage("You clicked on the 'Select Level' operation");
 		op = new operSelectLevel(this);
 		break;
-	//case ITM_EXIT:
-	//	op = new operExit(this);
-	//	break;
 	}
 	return op;
 }
