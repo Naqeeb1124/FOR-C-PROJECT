@@ -19,19 +19,20 @@ toolbar::toolbar(game* pG)
 	toolbarItemImages[ITM_BOAT] = "Icons\\B.jpg";
 	toolbarItemImages[ITM_CAR] = "Icons\\C.jpg";
 	toolbarItemImages[ITM_PLANE] = "Icons\\P.jpg";
-	toolbarItemImages[ITM_ROCKET] = "Icons\\R.jpg";
-	toolbarItemImages[ITM_TOWER] = "Icons\\TW.jpg";
-	toolbarItemImages[ITM_TREE] = "Icons\\TR.jpg";
+	toolbarItemImages[ITM_ARR] = "Icons\\A.jpg";
+	toolbarItemImages[ITM_HOUSE] = "Icons\\H.jpg";
+	toolbarItemImages[ITM_SIGN] = "Icons\\S.jpg";
 	toolbarItemImages[ITM_ZOOMIN] = "Icons\\1.jpg";
 	toolbarItemImages[ITM_ZOOMOUT] = "Icons\\2.jpg";
 	toolbarItemImages[ITM_ROTATE] = "Icons\\3.jpg";
-	toolbarItemImages[ITM_REFRESH] = "Icons\\4.jpg";
-	toolbarItemImages[ITM_HINT] = "Icons\\5.jpg";
-	toolbarItemImages[ITM_DELETE] = "Icons\\6.jpg";
-	toolbarItemImages[ITM_SAVE] = "Icons\\7.jpg";
-	toolbarItemImages[ITM_LOAD] = "Icons\\8.jpg";
-	toolbarItemImages[ITM_SELECTLEVEL] = "Icons\\9.jpg";
-	toolbarItemImages[ITM_EXIT] = "Icons\\10.jpg";
+	toolbarItemImages[ITM_FLIP] = "Icons\\4.jpg";
+	toolbarItemImages[ITM_REFRESH] = "Icons\\5.jpg";
+	toolbarItemImages[ITM_HINT] = "Icons\\6.jpg";
+	toolbarItemImages[ITM_DELETE] = "Icons\\7.jpg";
+	toolbarItemImages[ITM_SAVE] = "Icons\\8.jpg";
+	toolbarItemImages[ITM_LOAD] = "Icons\\9.jpg";
+	toolbarItemImages[ITM_SELECTLEVEL] = "Icons\\10.jpg";
+	toolbarItemImages[ITM_EXIT] = "Icons\\11.jpg";
 	
 
 	//Draw toolbar item one image at a time
@@ -44,27 +45,29 @@ toolbar::toolbar(game* pG)
 	pWind->DrawLine(0, height,width , height);
 
 	//Draw Lives/ Score/ Level
-	
+	int level = 1;
+	int lives = 5;
+	int score = 0;
 	//--Draw Lives--
-	const string sLives = "5 Lives ";
-	const int XLives = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
-	const int YLives = 0 ;
+	string sLives = "Lives: " + to_string(lives);
+	int XLives = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
+	int YLives = 0 ;
 	pWind->SetPen(BLACK, 1);
 	pWind->SetFont(20, BOLD, BY_NAME, "Arial");
 	pWind->DrawString(XLives, YLives, sLives);
 
 	//--Draw Score--
-	const string sScore = "Score: 0 ";
-	const int XScore = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
-	const int YScore = config.toolBarHeight/3 ;
+	string sScore = "Score: " + to_string(score);
+	int XScore = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
+	int YScore = config.toolBarHeight/3 ;
 	pWind->SetPen(BLACK,1);
 	pWind->SetFont(20, BOLD, BY_NAME, "Arial");
 	pWind->DrawString(XScore, YScore, sScore);
 
 	//--Draw Level--
-	const string sLevel = "Level: 0 ";
-	const int XLevel = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
-	const int YLevel = (2*config.toolBarHeight) / 3;
+	string sLevel = "Level: " + to_string(level);
+	int XLevel = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
+	int YLevel = (2*config.toolBarHeight) / 3;
 	pWind->SetPen(BLACK,1);
 	pWind->SetFont(20, BOLD, BY_NAME, "Arial");
 	pWind->DrawString(XLevel, YLevel, sLevel);
