@@ -96,6 +96,8 @@ enum toolbarItem //The items of the  toolbar (you should add more items)
 
 	ITM_ROTATE,		//Rotate shape CW
 
+	ITM_FLIP,		//Flip Shape
+
 	ITM_REFRESH,	//Reset game
 
 	ITM_HINT,		//Give hint to player
