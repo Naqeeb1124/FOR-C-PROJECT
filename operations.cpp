@@ -60,6 +60,9 @@ operRefresh::operRefresh(game* r_pGame) : operation(r_pGame)
 {
 }
 
+operFlip::operFlip(game* r_pGame) : operation(r_pGame)
+{
+}
 
 operHint::operHint(game* r_pGame) : operation(r_pGame)
 {
@@ -85,9 +88,7 @@ operSelectLevel::operSelectLevel(game* r_pGame) : operation(r_pGame)
 {
 }
 
-//operLoad::operLoad(game* r_pGame) : operation(r_pGame)
-//{
-//}
+
 
 
 void operAddBoat::Act()
@@ -102,10 +103,10 @@ void operAddBoat::Act()
 	int yGrid = config.RefY - config.RefX % config.gridSpacing;
 
 	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
+	point BoatShapeRef = { xGrid,yGrid };
 
 	//create a sign shape
-	shape* psh = new Boat(pGame, signShapeRef);
+	shape* psh = new Boat(pGame, BoatShapeRef);
 
 	//Add the shape to the grid
 	grid* pGrid = pGame->getGrid();
@@ -125,10 +126,10 @@ void operAddCar::Act()
 	int yGrid = config.RefY - config.RefX % config.gridSpacing;
 
 	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
+	point CarShapeRef = { xGrid,yGrid };
 
 	//create a sign shape
-	shape* psh = new Car(pGame, signShapeRef);
+	shape* psh = new Car(pGame, CarShapeRef);
 
 	//Add the shape to the grid
 	grid* pGrid = pGame->getGrid();
@@ -149,10 +150,10 @@ void operAddPlane::Act()
 	int yGrid = config.RefY - config.RefX % config.gridSpacing;
 
 	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
+	point PlaneShapeRef = { xGrid,yGrid };
 
 	//create a sign shape
-	shape* psh = new Plane(pGame, signShapeRef);
+	shape* psh = new Plane(pGame, PlaneShapeRef);
 
 	//Add the shape to the grid
 	grid* pGrid = pGame->getGrid();
@@ -172,10 +173,10 @@ void operAddArrow::Act()
 	int yGrid = config.RefY - config.RefX % config.gridSpacing;
 
 	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
+	point ArrowShapeRef = { xGrid,yGrid };
 
 	//create a sign shape
-	shape* psh = new arrow(pGame, signShapeRef);
+	shape* psh = new Arrow(pGame, ArrowShapeRef);
 
 	//Add the shape to the grid
 	grid* pGrid = pGame->getGrid();
@@ -196,10 +197,10 @@ void operAddHouse::Act()
 	int yGrid = config.RefY - config.RefX % config.gridSpacing;
 
 	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
+	point HouseShapeRef = { xGrid,yGrid };
 
 	//create a sign shape
-	shape* psh = new House(pGame, signShapeRef);
+	shape* psh = new House(pGame, HouseShapeRef);
 
 	//Add the shape to the grid
 	grid* pGrid = pGame->getGrid();
@@ -232,70 +233,32 @@ void operAddSign::Act()
 
 void operZoomIn::Act()
 {
-	window* pw = pGame->getWind();
-
-	//TODO:
-	// Don't allow adding new shape if there is alreday an active shape
-
-	//align reference point to the nearest grid point
-	int xGrid = config.RefX - config.RefX % config.gridSpacing;
-	int yGrid = config.RefY - config.RefX % config.gridSpacing;
-
-	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
-
-	//create a sign shape
-	shape* psh = new Sign(pGame, signShapeRef);
-
-	//Add the shape to the grid
 	grid* pGrid = pGame->getGrid();
-	pGrid->setActiveShape(psh);
-
+	shape* psh = pGrid->getActiveShape();
+	psh->resize_up();
 }
 
 void operZoomOut::Act()
 {
-	window* pw = pGame->getWind();
-
-	//TODO:
-	// Don't allow adding new shape if there is alreday an active shape
-
-	//align reference point to the nearest grid point
-	int xGrid = config.RefX - config.RefX % config.gridSpacing;
-	int yGrid = config.RefY - config.RefX % config.gridSpacing;
-
-	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
-
-	//create a sign shape
-	shape* psh = new Sign(pGame, signShapeRef);
-
-	//Add the shape to the grid
 	grid* pGrid = pGame->getGrid();
-	pGrid->setActiveShape(psh);
+	shape* psh = pGrid->getActiveShape();
+	psh->resize_down();
 
 }
 
 void operRotate::Act()
 {
-	window* pw = pGame->getWind();
-
-	//TODO:
-	// Don't allow adding new shape if there is alreday an active shape
-
-	//align reference point to the nearest grid point
-	int xGrid = config.RefX - config.RefX % config.gridSpacing;
-	int yGrid = config.RefY - config.RefX % config.gridSpacing;
-
-	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
-
-	//create a sign shape
-	shape* psh = new Sign(pGame, signShapeRef);
-
-	//Add the shape to the grid
 	grid* pGrid = pGame->getGrid();
-	pGrid->setActiveShape(psh);
+	shape* psh = pGrid->getActiveShape();
+	psh->rotate();
+
+}
+
+void operFlip::Act()
+{
+	grid* pGrid = pGame->getGrid();
+	shape* psh = pGrid->getActiveShape();
+	psh->flip();
 
 }
 
@@ -347,25 +310,9 @@ void operHint::Act()
 
 void operDelete::Act()
 {
-	window* pw = pGame->getWind();
-
-	//TODO:
-	// Don't allow adding new shape if there is alreday an active shape
-
-	//align reference point to the nearest grid point
-	int xGrid = config.RefX - config.RefX % config.gridSpacing;
-	int yGrid = config.RefY - config.RefX % config.gridSpacing;
-
-	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
-
-	//create a sign shape
-	shape* psh = new Sign(pGame, signShapeRef);
-
-	//Add the shape to the grid
 	grid* pGrid = pGame->getGrid();
-	pGrid->setActiveShape(psh);
-
+	shape* psh = pGrid->getActiveShape();
+	pGrid->deleteActiveShape(psh);
 }
 
 void operSave::Act()
@@ -436,6 +383,7 @@ void operSelectLevel::Act()
 	pGrid->setActiveShape(psh);
 
 }
+
 
 
 
