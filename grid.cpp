@@ -108,7 +108,13 @@ void grid::deleteActiveShape(shape* activeShape)
 			//shapeList[i]->draw();	//draw each shape
 //}
 
-
+shape* grid::getRandomShape() const {
+    if (shapeCount > 0) {
+        int randomIndex = rand() % shapeCount;
+        return shapeList[randomIndex];
+    }
+    return nullptr; // if no naqqar available
+}
 
 
 
