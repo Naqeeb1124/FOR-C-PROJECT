@@ -31,7 +31,7 @@ void Sign::rotate()
 	base->setRefPoint(newBaseRef);
 	base->rotate();
 
-
+	stepCount++;
 }
 void Sign::resize_up()
 {
@@ -41,6 +41,9 @@ void Sign::resize_up()
 	base = new Rect(pGame, baseRef, config.sighShape.baseHeight, config.sighShape.baseWdth);
 	base->resize_up();
 	top->resize_up();
+
+	stepCount++;
+
 }
 
 void Sign::resize_down()
@@ -51,6 +54,9 @@ void Sign::resize_down()
 	base = new Rect(pGame, baseRef, config.sighShape.baseHeight, config.sighShape.baseWdth);
 	base->resize_down();
 	top->resize_down();
+
+	stepCount++;
+
 }
 
 void Sign::flip()
@@ -61,15 +67,28 @@ void Sign::flip()
 	point newbaseref = { topRef.x,topRef.y };
 	top->setRefPoint(newtopref);
 	base->setRefPoint(newbaseref);
+
+	stepCount++;
+
 }
 
 void Sign::move(direction dir)
 {
 	base->move(dir);
 	top->move(dir);
+
+	stepCount++;
+
 }
 
-
+bool Sign::matches(const shape* target) const {
+	const Sign* targetSign = dynamic_cast<const Sign*>(target);
+	if (targetSign) {
+		// Compare top and base rectangles
+		return top->matches(targetSign->top) && base->matches(targetSign->base);
+	}
+	return false;
+}
 
 
 
@@ -131,6 +150,9 @@ void House::rotate() {
 	chimneyRef.y = baseRef.y + rotatedRelativeChimneyRef.y;
 	chimney->setRefPoint(chimneyRef);
 	chimney->rotate();
+
+	stepCount++;
+
 }
 
 void House::resize_up()
@@ -145,6 +167,9 @@ void House::resize_up()
 	chimney = new Rect(pGame, chimneyRef, config.houseShape.chimneyHeight, config.houseShape.chimneyWdth);
 	base->resize_up();
 	chimney->resize_up();
+
+	stepCount++;
+
 }
 
 void House::resize_down()
@@ -162,6 +187,9 @@ void House::resize_down()
 	base->resize_down();
 	chimney->resize_down();
 
+	stepCount++;
+
+
 }
 
 void House::flip()
@@ -178,6 +206,9 @@ void House::flip()
 	roof->setvert3(newver3);
 	chimney->setRefPoint(newchimneyref);
 	base->setRefPoint(newbaseref);
+
+	stepCount++;
+
 	
 }
 
@@ -205,6 +236,29 @@ void House::move(direction dir){
 		roof = new triangle(pGame, roofRef, roof2, roof3);
 	base->move(dir);
 	chimney->move(dir);
+
+	stepCount++;
+
+}
+
+bool House::matches(const shape* target) const {
+	const House* targetHouse = dynamic_cast<const House*>(target);
+	if (targetHouse) {
+		// Compare base, roof, and chimney
+		return base->matches(targetHouse->base) &&
+			roof->matches(targetHouse->roof) &&
+			chimney->matches(targetHouse->chimney);
+	}
+	return false;
+}
+
+
+bool House::matches(const shape* target) const {
+	const House* targetHouse = dynamic_cast<const House*>(target);
+	if (targetHouse) {
+		return roof->matches(targetHouse->roof) && base->matches(targetHouse->base) && chimney->matches(targetHouse->chimney);
+	}
+	return false;
 }
 
 
@@ -263,6 +317,9 @@ void Car::rotate()
 	lowBody->rotate();
 	upBody->rotate();
 
+	stepCount++;
+
+
 }
 
 void Car::flip()
@@ -279,6 +336,9 @@ void Car::flip()
 	upBody->flip();
 	frontTire->setRefPoint(newrRcircle);
 	backTire->setRefPoint(newrLcircle);
+
+	stepCount++;
+
 }
 
 void Car::move(direction dir)
@@ -287,6 +347,9 @@ void Car::move(direction dir)
 	upBody->move(dir);
 	frontTire->move(dir);
 	backTire->move(dir);
+
+	stepCount++;
+
 }
 
 
@@ -305,6 +368,9 @@ void Car::resize_up()
 	upBody->resize_up();
 	frontTire->resize_up();
 	backTire->resize_up();
+
+	stepCount++;
+
 }
 
 void Car::resize_down()
@@ -322,6 +388,9 @@ void Car::resize_down()
 	upBody->resize_down();
 	frontTire->resize_down();
 	backTire->resize_down();
+
+	stepCount++;
+
 	
 }
 
@@ -383,6 +452,9 @@ void Boat::rotate()
 	point rotRelMastVert2 = multiplyByMatrix(relMastVert2);
 	point newMast2 = { hullRef.x + rotRelMastVert2.x, hullRef.y + rotRelMastVert2.y };
 	mast = new line(pGame, newMastRef, newMast2);
+
+	stepCount++;
+
 }
 
 void Boat::flip()
@@ -400,6 +472,9 @@ void Boat::flip()
 	hull->setRefPoint(newbaseref);
 	mast->setRefPoint(newmusref);
 	sail->setvert3(vert33);
+
+	stepCount++;
+
 }
 
 void Boat::move(direction dir)
@@ -430,6 +505,10 @@ void Boat::move(direction dir)
 	hull->move(dir);
 	
 	mast->move(dir);
+
+
+	stepCount++;
+
 }
 
 void Boat::resize_up()
@@ -444,6 +523,10 @@ void Boat::resize_up()
 	sail = new triangle(pGame, sailRef, sail2, sail3);
 	mast = new line(pGame, mastRef, { mastRef.x, mastRef.y - config.boatShape.mastHeight });
 	hull->resize_up();
+
+
+	stepCount++;
+
 	
 }
 
@@ -459,6 +542,10 @@ void Boat::resize_down()
 	sail = new triangle(pGame, sailRef, sail2, sail3);
 	mast = new line(pGame, mastRef, { mastRef.x, mastRef.y - config.boatShape.mastHeight });
 	hull->resize_down();
+
+
+	stepCount++;
+
 }
 
 
@@ -623,6 +710,9 @@ void Plane::rotate()
 	point newLowStab3 = { ref.x + rotRelLowStabVert3.x, ref.y + rotRelLowStabVert3.y };
 
 	lowStab = new triangle(pGame, newLowStabRef, newLowStab2, newLowStab3);
+
+	stepCount++;
+
 }
 
 void Plane::resize_up()
@@ -663,6 +753,9 @@ void Plane::resize_up()
 	bottomWing->resize_up();
 	upStab->resize_up();
 	lowStab->resize_up();
+
+	stepCount++;
+
 }
 
 void Plane::resize_down()
@@ -697,6 +790,9 @@ void Plane::resize_down()
 	lowStab = new triangle(pGame, lowStabRef, lowStab2, lowStab3);
 
 	fuselage->resize_down();
+
+	stepCount++;
+
 	}
 
 void Plane::flip()
@@ -743,6 +839,9 @@ void Plane::flip()
 	lowStab->setRefPoint(newbottstabref);
 	lowStab->setvert2(newlowsta2);
 	lowStab->setvert3(newlowsta3);
+
+	stepCount++;
+
 
 }
 
@@ -791,6 +890,10 @@ void Plane::move(direction dir)
 
 
 	 fuselage->move(dir);
+
+
+	 stepCount++;
+
 }
 
 
@@ -837,6 +940,7 @@ void Arrow::rotate()
 	head = new triangle(pGame, newHeadRef, newHead2, newHead3);
 
 
+	stepCount++;
 
 
 }
@@ -853,6 +957,9 @@ void Arrow::resize_up()
 	
 	shaft->resize_up();
 	head->resize_up();
+
+	stepCount++;
+
 }
 
 void Arrow::resize_down()
@@ -866,6 +973,9 @@ void Arrow::resize_down()
 	head = new triangle(pGame, headRef, head2, head3);
 
 	shaft->resize_down();
+
+	stepCount++;
+
 	
 }
 
@@ -873,6 +983,9 @@ void Arrow::flip()
 {
 	shaft->flip();
 	head->flip();
+
+	stepCount++;
+
 }
 
 void Arrow::move(direction dir)
@@ -897,5 +1010,8 @@ void Arrow::move(direction dir)
 	point head3 = { headRef.x + config.arrowShape.headWdth , headRef.y + config.arrowShape.headHeight / 2  };
 	head = new triangle(pGame, headRef, head2, head3);
 	shaft->move(dir);
+
+	stepCount++;
+
 }
 
