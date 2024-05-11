@@ -30,5 +30,6 @@ public:
 	shape* getActiveShape();
 	//void deleteActiveShape(shape* activeShape); //Similar to cpp file
 	void draw_delete() const;
+	void addshapes();
 };
 
