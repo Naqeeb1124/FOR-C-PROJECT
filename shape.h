@@ -8,6 +8,11 @@ class game;     //forward declaration
 struct point
 {
 	int x, y;
+public:
+	
+	bool operator==(const point& other) const {
+		return x == other.x && y == other.y;
+	}
 };
 
 enum ShapeType
