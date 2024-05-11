@@ -118,13 +118,14 @@ shape* grid::getRandomShape() const {
 
 
 
+
 void grid::addshapes()
 {
 	toolbar* toool = pGame->gettoolbar();
 	int level = toool->getlevel();
 	int numShapesToAdd = 0;
 
-	switch (level)
+	switch (level-1)
 	{
 	case level1:
 		numShapesToAdd = 1;
@@ -139,7 +140,7 @@ void grid::addshapes()
 		numShapesToAdd = 2 * level - 1;
 		break;
 	default:
-		return; // If the level is undefined, do nothing
+		return; 
 	}
 
 	for (int i = 0; i < numShapesToAdd; i++)
@@ -149,37 +150,65 @@ void grid::addshapes()
 		shape* newShape = nullptr;
 		switch (randomNum)
 		{
-		case 0:
-			newShape = new House(pGame, randomPoint);
-			addShape(newShape);
+		case 0: 
+			newShape = new House(pGame, randomPoint); 
 			break;
-		case 1:
-			newShape = new Sign(pGame, randomPoint);
-			addShape(newShape);
+		case 1: 
+			newShape = new Sign(pGame, randomPoint); 
 			break;
-		case 2:
-			newShape = new Boat(pGame, randomPoint);
-			addShape(newShape);
+		case 2: 
+			newShape = new Boat(pGame, randomPoint); 
 			break;
-		case 3:
-			newShape = new Plane(pGame, randomPoint);
-			addShape(newShape);
+		case 3: 
+			newShape = new Plane(pGame, randomPoint); 
 			break;
-		case 4:
-			newShape = new Car(pGame, randomPoint);
-			addShape(newShape);
+		case 4: 
+			newShape = new Car(pGame, randomPoint); 
 			break;
-		case 5:
-			newShape = new Arrow(pGame, randomPoint);
-			addShape(newShape);
+		case 5: 
+			newShape = new Arrow(pGame, randomPoint); 
 			break;
 		}
-		if (newShape && !addShape(newShape))
-		{
-			delete newShape; // Properly delete shape if not added to avoid memory leaks
+		if (newShape) {
+			int rotate = rand() % 3;
+			switch (rotate)
+			{case 1:
+				newShape->resize_up();
+				break;
+			case 2:
+				newShape->resize_down();
+			case 3:
+				newShape->rotate();
+				break;
+			default:
+				break;
+			}
+			int rotate = rand() % 3;
+			switch (rotate)
+			{case 1:
+				newShape->rotate();
+				break;
+			case 2:
+				newShape->rotate();
+				newShape->rotate();
+				break;
+			case 3:
+				newShape->rotate();
+				newShape->rotate();
+				newShape->rotate();
+				break;
+			default:
+				break;
+			}
+			
+			addShape(newShape);
+		} 
+		else {
+			delete newShape; // Failed to add shape, delete it
 		}
 	}
 }
+
 
 
 
