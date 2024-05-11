@@ -23,7 +23,7 @@ public:
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
-
+	bool matches(const shape* target) const;
 
 };
 
