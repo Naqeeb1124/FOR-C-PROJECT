@@ -45,9 +45,9 @@ toolbar::toolbar(game* pG)
 	pWind->DrawLine(0, height,width , height);
 
 	//Draw Lives/ Score/ Level
-	int level = 1;
-	int lives = 5;
-	int score = 0;
+	//int level = 1;
+	//int lives = 5;
+	//int score = 0;
 	//--Draw Lives--
 	string sLives = "Lives: " + to_string(lives);
 	int XLives = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
@@ -73,6 +73,11 @@ toolbar::toolbar(game* pG)
 	pWind->DrawString(XLevel, YLevel, sLevel);
 }
 
+
+int toolbar::getlevel() const
+{
+	return level;
+}
 
 
 //handles clicks on toolbar icons, returns ITM_CNT if the click is not inside the toolbar
