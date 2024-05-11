@@ -54,6 +54,14 @@ void Rect::flip()
 
 }
 
+bool Rect::matches(const shape* target) const {
+	const Rect* targetRect = dynamic_cast<const Rect*>(target);
+	if (targetRect) {
+		return hght == targetRect->hght && wdth == targetRect->wdth;
+	}
+	return false;
+}
+
 ////////////////////////////////////////////////////  class circle  ///////////////////////////////////////
 //TODO: Add implementation for class circle here
 circle::circle(game* r_pGame, point ref, int r) :shape(r_pGame, ref)
