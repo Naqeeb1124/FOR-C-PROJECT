@@ -18,6 +18,8 @@ class grid
 
 	int shapeCount;		//current number of shapes in the list
 	game* pGame;
+
+	shape* getRandomShape(); const;
 public:
 	grid(point r_uprleft, int r_width, int r_height, game* r_pGame);
 	~grid();
