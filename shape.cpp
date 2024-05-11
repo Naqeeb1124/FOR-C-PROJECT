@@ -9,7 +9,6 @@ shape::shape(game* r_pGame, point ref)
 	pGame = r_pGame;
 	fillColor = config.fillColor;
 	borderColor = config.penColor;
-	stepCount = 0;
 }
 
 void shape::setRefPoint(point p)
@@ -18,7 +17,7 @@ void shape::setRefPoint(point p)
 }
 
 void shape::move(direction dir)
-{
+{	
 	switch (dir)
 	{
 	case right:
@@ -34,4 +33,25 @@ void shape::move(direction dir)
 		RefPoint.y -= config.gridSpacing;
 		break;
 	}
+
+}
+
+point shape::multiplyByMatrix(point& p)
+{
+	//will be changed once approval for cmath is obtained.
+	int newX = -p.y;
+	int newY = p.x;
+	point newP = { newX,newY };
+
+	return newP;
+}
+
+point shape::getRefPoint()
+{
+	return RefPoint;
+}
+
+int shape::getStepCount() const 
+{
+	return stepCount;
 }
