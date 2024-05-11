@@ -32,8 +32,11 @@ public:
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+	void move(direction dir) override;
 
 };
+
+
 
 /// //////////////////////////// THE FOLLOWING CODE IS ENTIRELY WRITTEN BY ABDELRAHMAN MOHAMED////////////
 
@@ -41,6 +44,7 @@ class House :public shape
 {
 	Rect* base;
 	triangle* roof;
+	Rect* chimney;
 public:
 	House(game* r_pGame, point ref);
 	virtual void draw() const;
@@ -48,6 +52,7 @@ public:
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+	void move(direction dir) override;
 };
 
 class Car :public shape
@@ -63,6 +68,7 @@ public:
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+	void move(direction dir) override;
 };
 
 class Boat :public shape
@@ -77,6 +83,7 @@ public:
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+	void move(direction dir) override;
 };
 
 class Plane :public shape
@@ -95,19 +102,22 @@ public:
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+	void move(direction dir) override;
 };
 
-class arrow :public shape
+class Arrow :public shape
 {
 	Rect* shaft;
 	triangle* head;
 public:
-	arrow(game* r_pGame, point ref);
+
+	Arrow(game* r_pGame, point ref);
 	virtual void draw() const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+	void move(direction dir) override;
 
 };
 
