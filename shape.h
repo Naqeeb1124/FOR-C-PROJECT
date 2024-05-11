@@ -47,7 +47,8 @@ protected:
 	point RefPoint;		//Each shape must have a reference point
 	game* pGame;        //pointer to game object
 	color fillColor;	//shape fill color
-	color borderColor;	//shape border color
+	color borderColor; //shape border color
+	int stepCount;
 public:
 	shape(game* r_pGame, point ref);
 	virtual void draw() const = 0;//for a shape to draw itself on the screen
@@ -55,7 +56,8 @@ public:
 	virtual void rotate() = 0;
 	virtual void move(direction dir);
 	point getRefPoint();
-
+	static point multiplyByMatrix(point& p);
+	int getStepCount() const;
 
 	//-- The following functions should be supported by the shape class
 	//-- It should be overridden by each inherited shape
@@ -68,6 +70,7 @@ public:
 	/*virtual void move(direction dir)=0;*/		//Move the shape
 	//virtual void save(ofstream &OutFile) = 0;	//Save the shape parameters to the file
 	//virtual void load(ifstream &Infile) = 0;	//Load the shape parameters to the file
-	static point multiplyByMatrix(point& p);
+
+
 
 };
