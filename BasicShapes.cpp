@@ -2,6 +2,7 @@
 #include "gameConfig.h"
 #include "game.h"
 
+
 ////////////////////////////////////////////////////  class Rect  ///////////////////////////////////////
 
 Rect::Rect(game* r_pGame, point ref, int r_hght, int r_wdth) :shape(r_pGame, ref)
@@ -28,20 +29,22 @@ void Rect::draw() const
 void Rect::rotate()
 {
 	int temp = hght;
-	wdth = hght;
 	hght = wdth;
+	wdth = temp;
 }
 
 void Rect::resize_up()
 {
-	wdth * 2;
-	hght * 2;
+	wdth *= 2;
+	hght *= 2;
+
 }
 
 void Rect::resize_down()
 {
-	wdth / 2;
-	hght / 2;
+	
+	wdth /= 2;
+	hght /= 2;
 }
 
 void Rect::flip()
@@ -64,25 +67,36 @@ void circle::draw() const
 	pW->SetPen(borderColor, config.penWidth);
 	pW->SetBrush(fillColor);
 	pW->DrawCircle(RefPoint.x, RefPoint.y, rad, FILLED);
-} //circle doesnt need a rotate function.
+}
+//circle doesnt need a rotate function.
 
 void circle::resize_up()
 {
-	rad * 2;
+	window* pW = pGame->getWind();	//get interface window
+	pW->DrawCircle(RefPoint.x-rad, RefPoint.y-rad, rad, FILLED);
+	rad *= 2;
 }
 
 void circle::resize_down()
 {
-	rad / 2;
+	window* pW = pGame->getWind();	//get interface window
+	pW->DrawCircle(RefPoint.x + rad, RefPoint.y + rad, rad, FILLED);
+	rad /= 2;
 }
 
 void circle::flip()
 {
 }
 
-////////////////////////////////////////////////////  class triangle  ///////////////////////////////////////
+void circle::rotate()
+{
 
-triangle::triangle(game* r_pGame, point ref, point r_vert2, point r_vert3) :shape(r_pGame, ref)
+}
+
+
+////////////////////////////////////////////////////  class triangle  ///////////////////////////////////////
+//TODO: Add implementation for class triangle here
+triangle::triangle(game* r_pGame, point ref,point r_vert2, point r_vert3) :shape(r_pGame, ref)
 {
 	//vertex1 is the ref point
 	vertex1 = ref;
@@ -92,38 +106,62 @@ triangle::triangle(game* r_pGame, point ref, point r_vert2, point r_vert3) :shap
 
 void triangle::draw() const
 {
-
+	
 	point v1 = vertex1, v2 = vertex2, v3 = vertex3;
 
 	window* pW = pGame->getWind();
 	pW->SetPen(borderColor, config.penWidth);
 	pW->SetBrush(fillColor);
-	pW->DrawTriangle(vertex1.x, vertex1.y, vertex2.x, vertex2.y, vertex3.x, vertex3.y);
+	pW->DrawTriangle(vertex1.x,vertex1.y, vertex2.x, vertex2.y, vertex3.x, vertex3.y);
 }
+
+
 
 void triangle::rotate()
 {
-	/*since the reference point of the triangle is at one of it's vertices, we can take it as the origin,
-	and apply the transformation [[0,1],[-1,0]] to the other 2 vertices, giving us a 90 deg CLOCKWISE rotation.*/
-	//after rotation the points will be:
+	RefPoint = vertex1;
+	// Translate the vertices relative to the reference point
+	point rV2 = { vertex2.x - RefPoint.x, vertex2.y - RefPoint.y };
+	point rV3 = { vertex3.x - RefPoint.x, vertex3.y - RefPoint.y };
 
+	// Rotate the translated vertices
+	point rotatedV2 = multiplyByMatrix(rV2);
+	point rotatedV3 = multiplyByMatrix(rV3);
 
-	//check out the multiplybyMatrix() function in gameconfig.h.
-	// vertex1 doesnt change.
+	// Update the vertices by adding the reference point back
 
-	//for vertex 2
-	vertex2 = multiplyByMatrix(vertex2);
-	//for vertex 3
-	vertex3 = multiplyByMatrix(vertex3);
-
+	vertex2.x = RefPoint.x + rotatedV2.x;
+	vertex2.y = RefPoint.y + rotatedV2.y;
+	vertex3.x = RefPoint.x + rotatedV3.x;
+	vertex3.y = RefPoint.y + rotatedV3.y;
 }
 
+point triangle::getVert2()
+{
+	return vertex2;
+}
+point triangle::getVert3()
+{
+	return vertex3;
+}
+
+point triangle::setvert3(point vert)
+{
+	return vertex3 = vert;
+}
+
+point triangle::setvert2(point vert)
+{
+	return vertex2 = vert;
+}
 
 
 void triangle::resize_up()
 {
-	RefPoint.x *= 2; vertex2.x *= 2; vertex3.x *= 2;
-	RefPoint.y *= 2; vertex2.y *= 2; vertex3.y *= 2;
+	 length_side_1 = sqrt(pow(vertex2.x - RefPoint.x, 2) + pow(vertex2.y - RefPoint.y, 2));
+	 length_side_2 = sqrt(pow(vertex3.x - RefPoint.x, 2) + pow(vertex3.y - RefPoint.y, 2));
+	 length_side_3 = sqrt(pow(vertex3.x - vertex2.x, 2) + pow(vertex3.y - vertex2.y, 2));
+	 length_side_1 *= 2; length_side_2 *= 2; length_side_3 *= 2;
 }
 
 void triangle::resize_down()
@@ -134,66 +172,24 @@ void triangle::resize_down()
 }
 
 void triangle::flip()
-{
-	RefPoint.y;
-	vertex2.y;
-	vertex3.y;
-	double factor, factor22, factor3;
-	if (vertex2.y < vertex3.y || vertex2.y == vertex3.y && RefPoint.y >vertex3.y && RefPoint.y > vertex2.y)
-	{
-		factor = RefPoint.y - vertex3.y;
-		factor22 = RefPoint.y - vertex2.y;
-		RefPoint.y -= factor;
-		vertex3.y += factor;
-		vertex2.y += factor22;
-		factor3 = vertex3.y - vertex2.y;
-		vertex3.y -= factor3;
-	}
-
-	else if (vertex2.y > vertex3.y && RefPoint.y > vertex3.y && RefPoint.y > vertex2.y)
-	{
-		factor = RefPoint.y - vertex2.y;
-		factor22 = RefPoint.y - vertex3.y;
-		RefPoint.y -= factor;
-		vertex3.y += factor22;
-		vertex2.y += factor;
-		factor3 = vertex2.y - vertex3.y;
-		vertex2.y -= factor3;
-	}
-	else if (vertex2.y < vertex3.y || vertex2.y == vertex3.y && RefPoint.y < vertex3.y && RefPoint.y < vertex2.y)
-	{
-		factor = vertex3.y - RefPoint.y;
-		factor22 = vertex2.y - RefPoint.y;
-		RefPoint.y += factor;
-		vertex3.y -= factor;
-		vertex2.y -= factor22;
-		factor3 = vertex3.y - vertex2.y;
-		vertex3.y -= factor3;
-	}
-	else if (vertex2.y > vertex3.y || vertex2.y == vertex3.y && RefPoint.y < vertex3.y && RefPoint.y < vertex2.y)
-	{
-		factor = -RefPoint.y + vertex2.y;
-		factor22 = -RefPoint.y + vertex3.y;
-		RefPoint.y += factor;
-		vertex3.y -= factor22;
-		vertex2.y -= factor;
-		factor3 = vertex2.y - vertex3.y;
-		vertex2.y -= factor3;
-	}
-} 
-
-////////////////////////////////////////////////////  class line  ///////////////////////////////////////
-
-//THIS CLASS HAS BEEN MODIFIED BY ABDELRAHMAN MOHAMED TO BE ABLE TO ROTATE THE LINE.
-line::line(game* r_pGame, point ref, point length) :shape(r_pGame, ref)
-{
-	lineLength = length;
+{	point
+	temp = vertex1;  // Store the first vertex temporarily
+	vertex1 = vertex3;      // Assign the third vertex to the first position
+	vertex3 = temp;
 }
 
-void line::draw() const
+
+
+
+////////////////////////////////////////////////////  class line  ///////////////////////////////////////
+line::line(game* r_pGame, point ref, point Length) :shape(r_pGame, ref)
 {
-	int x1 = RefPoint.x, y1 = RefPoint.y, x2 = x1 + lineLength.x;
-	int y2 = y1 + lineLength.y;
+	lineLength = Length;
+}
+
+void line::draw() const {
+	int x1 = RefPoint.x, y1 = RefPoint.y;
+	int x2 = lineLength.x, y2 = lineLength.y;  
 	window* pW = pGame->getWind();
 	pW->SetPen(borderColor, config.penWidth);
 	pW->DrawLine(x1, y1, x2, y2);
@@ -202,17 +198,27 @@ void line::draw() const
 void line::rotate()
 {
 	//x1,y1 is the origin so no transformation will occur.
-	lineLength = multiplyByMatrix(lineLength);
+	point AbuOthman = { lineLength.x - RefPoint.x, lineLength.y - RefPoint.y };
+	point newLength = multiplyByMatrix(AbuOthman);
+
+	lineLength.x = RefPoint.x + newLength.x;
+	lineLength.y = RefPoint.y + newLength.y;
+
+}
+
+point line::getPoint2()
+{
+	return lineLength;
 }
 
 void line::resize_up()
 {
-	length * 2;
+	lineLength.y *= 2; //////ISSUE
 }
 
 void line::resize_down()
 {
-	length / 2;
+	lineLength.y /= 2;	//////ISSUE
 }
 
 void line::flip()
@@ -220,13 +226,16 @@ void line::flip()
 
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 ////////////////////////////////////////////////////  class polygon  ///////////////////////////////////////
 polygon::polygon(game* r_pGame, point ref, int r_pline1, int r_pline2, int r_hght) :shape(r_pGame, ref)
 {
 	Pline1 = r_pline1;
 	Pline2 = r_pline2;
 	hght = r_hght;
+
+
 }
 
 void polygon::draw() const
@@ -240,33 +249,28 @@ void polygon::draw() const
 	pW->SetPen(borderColor, config.penWidth);
 	pW->SetBrush(fillColor);
 	pW->DrawPolygon(x_coordinates_array, y_coordinates_array,4, FILLED);
+
 }
 
 void polygon::rotate()
 {
-	int temp;
-	for (int i = 0; i < 4; i++) {
-		temp = RefPoint.x - y_coordinates_array[i];
-		y_coordinates_array[i] = RefPoint.y + x_coordinates_array[i];
-		x_coordinates_array[i] = temp;
-	}
-} //to be rechecked later
 
+}
 
 
 void polygon::resize_up()
 {
-	Pline1 * 2;
-	Pline2 * 2;
-	hght * 2;
+	Pline1 *= 2;
+	Pline2 *= 2;
+	hght *= 2;
 }
 
 void polygon::resize_down()
 {
 
-	Pline1 / 2;
-	Pline2 / 2;
-	hght / 2;
+	Pline1 /= 2;
+	Pline2 /= 2;
+	hght /= 2;
 }
 
 void polygon::flip()
