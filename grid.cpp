@@ -118,3 +118,68 @@ shape* grid::getRandomShape() const {
 
 
 
+void grid::addshapes()
+{
+	toolbar* toool = pGame->gettoolbar();
+	int level = toool->getlevel();
+	int numShapesToAdd = 0;
+
+	switch (level)
+	{
+	case level1:
+		numShapesToAdd = 1;
+		break;
+	case level2:
+		numShapesToAdd = 3;
+		break;
+	case level3:
+		numShapesToAdd = 5;
+		break;
+	case leveln:
+		numShapesToAdd = 2 * level - 1;
+		break;
+	default:
+		return; // If the level is undefined, do nothing
+	}
+
+	for (int i = 0; i < numShapesToAdd; i++)
+	{
+		int randomNum = rand() % 6; // Generate a new random number for each shape
+		point randomPoint = { config.ranRefx,config.ranRefy };
+		shape* newShape = nullptr;
+		switch (randomNum)
+		{
+		case 0:
+			newShape = new House(pGame, randomPoint);
+			addShape(newShape);
+			break;
+		case 1:
+			newShape = new Sign(pGame, randomPoint);
+			addShape(newShape);
+			break;
+		case 2:
+			newShape = new Boat(pGame, randomPoint);
+			addShape(newShape);
+			break;
+		case 3:
+			newShape = new Plane(pGame, randomPoint);
+			addShape(newShape);
+			break;
+		case 4:
+			newShape = new Car(pGame, randomPoint);
+			addShape(newShape);
+			break;
+		case 5:
+			newShape = new Arrow(pGame, randomPoint);
+			addShape(newShape);
+			break;
+		}
+		if (newShape && !addShape(newShape))
+		{
+			delete newShape; // Properly delete shape if not added to avoid memory leaks
+		}
+	}
+}
+
+
+
