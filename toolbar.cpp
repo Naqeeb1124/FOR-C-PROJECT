@@ -97,3 +97,6 @@ toolbarItem toolbar::getItemClicked(int x)
 
 }
 
+int toolbar::getScore() const{
+	return score;
+}
