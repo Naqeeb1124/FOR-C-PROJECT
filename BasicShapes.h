@@ -13,7 +13,7 @@
 */
 //Reference point of the rectangle is at the centre of it
 
-class Rect :public shape
+class Rect:public shape
 {
 	int hght, wdth;	//height and width of the recangle
 public:
@@ -34,12 +34,14 @@ class circle :public shape
 {
 	//Add data memebrs for class circle
 	int rad;
-public:
+public:	
 	circle(game* r_pGame, point ref, int r);	//add more parameters for the constructor if needed
 	virtual void draw() const;
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+	virtual void rotate();
+
 };
 
 
@@ -48,14 +50,24 @@ public:
 class triangle :public shape
 {
 	//Add data memebrs for class triangle
-	point vertex1, vertex2, vertex3;
+	point vertex1,vertex2,vertex3;
+	double length_side_1;
+	double length_side_2;	
+	double length_side_3;
 public:
-	triangle(game* r_pGame, point ref, point r_vert2, point r_vert3);	//add more parameters for the constructor if needed
+	triangle(game* r_pGame, point ref, point r_vert2,point r_vert3);	//add more parameters for the constructor if needed
 	virtual void draw() const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+	point getVert2();
+	point getVert3();
+	point setvert3(point vert);
+	point setvert2(point vert);
+
+
+
 };
 
 ////////////////////////////////////////////////////  class line  ///////////////////////////////////////
@@ -64,13 +76,16 @@ class line :public shape
 {
 	//Add data memebrs for class line
 	point lineLength;
+
 public:
-	line(game* r_pGame, point ref, point length);	//add more parameters for the constructor if needed
+	line(game* r_pGame, point ref, point Length);	//add more parameters for the constructor if needed
 	virtual void draw() const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+	point getPoint2();
+
 };
 
 ////////////////////////////////////////////////////  class polygon  ///////////////////////////////////////
@@ -81,13 +96,13 @@ class polygon :public shape
 	int Pline1;
 	int Pline2;
 	int hght;
-	int x_coordinates_array[4];
-	int y_coordinates_array[4];
 public:
-	polygon(game* r_pGame, point ref, int r_pline1, int r_pline2, int r_hght);	//add more parameters for the constructor if needed
+	polygon(game* r_pGame, point ref, int r_pline1,int r_pline2,int r_hght);	//add more parameters for the constructor if needed
 	virtual void draw() const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+
 };
+
