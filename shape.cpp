@@ -9,6 +9,7 @@ shape::shape(game* r_pGame, point ref)
 	pGame = r_pGame;
 	fillColor = config.fillColor;
 	borderColor = config.penColor;
+	stepCount = 0;
 }
 
 void shape::setRefPoint(point p)
