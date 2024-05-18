@@ -3,7 +3,7 @@
 #include "toolbar.h"
 #include "operations.h"
 #include "grid.h"
-
+#include "Timer.h"
 
 
 //Main class that coordinates the game operation
@@ -16,6 +16,9 @@ class game
 	
 	window* pWind;	//Pointer to the CMU graphics window
 	grid* shapesGrid;
+	int score;
+	Timer gameTimer;
+	bool isTimedGame;
 
 public:
 	game();
@@ -33,10 +36,18 @@ public:
 
 	//creates an operation according to the toolbar item clicked
 	operation* createRequiredOperation(toolbarItem clickedItem);
-
-
-
+	int getScore() const;
+	int incScore2();
+	int incScore1();
+	int decScore1();
+	int setScore(int s);
 	void run();	//start the game
+
+	//for the timer:
+	//void startTimedGame(std::chrono::seconds duration);
+	//void handleTimerTimeout();
+	//void handleUserAction();
+
 
 };
 
