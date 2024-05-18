@@ -67,7 +67,7 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 	{
 	case ITM_BOAT:
 		printMessage("You clicked on the Boat");
-		op = new operAddBoat(this);
+		op = new move_shape(this);
 		break;
 	case ITM_CAR:
 		printMessage("You clicked on the Car");
@@ -101,10 +101,6 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 		printMessage("You clicked on the 'Rotate' operation");
 		op = new operRotate(this);
 		break;
-	case ITM_FLIP:
-		printMessage("You clicked on the 'Flip' operation");
-		op = new operFlip(this);
-		break;
 	case ITM_REFRESH:
 		printMessage("You clicked on the 'Refresh' operation");
 		op = new operRefresh(this);
@@ -115,7 +111,7 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 		break;
 	case ITM_DELETE:
 		printMessage("You clicked on the 'Delete' operation");
-		op = new operDelete(this);
+		op = new delete_shappe(this);
 		break;
 	case ITM_SAVE:
 		printMessage("You clicked on the 'Save' operation");
@@ -127,8 +123,15 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 		break;
 	case ITM_SELECTLEVEL:
 		printMessage("You clicked on the 'Select Level' operation");
-		op = new operSelectLevel(this);
+		op = new move_shape(this);
 		break;
+	//case ADD THE MOVE IMAGE HERE:
+	//	printMessage("You clicked on the 'Select Level' operation");
+	//	op = new move_shape(this);
+	//	break;
+	//case ITM_EXIT:
+	//	op = new operExit(this);
+	//	break;
 	}
 	return op;
 }
@@ -221,4 +224,73 @@ void game::run()
 		}	
 
 	} while (clickedItem!=ITM_EXIT);
+}
+
+
+
+
+//for timer
+
+
+//void game::startTimedGame(std::chrono::seconds duration) {
+//	isTimedGame = true;
+//	gameTimer.start(duration, [this]() {
+//		// Handle timer timeout
+//		handleTimerTimeout();
+//		});
+////}
+//
+//void game::handleTimerTimeout() {
+//	// Decrement player lives
+//	decrementPlayerLives();
+//
+//	// Reset the timer
+//	gameTimer.stop();
+//
+//	// Restart the timer if the player still has lives left
+//	if (hasRemainingLives()) {
+//		startTimedGame(/* desired duration */);
+//	}
+//	else {
+//		// Game over
+//		handleGameOver();
+//	}
+//}
+
+//void game::handleUserAction() {
+//	// Start the timer if it's a timed game and the timer is not running
+//	if (isTimedGame && !gameTimer.isTimerRunning()) {
+//		startTimedGame(//later);
+//	}
+//
+//	// Handle user action (rotate, resize, move, etc.)
+//	// ...
+//}
+
+int game::incScore2() {
+	int score = getScore();
+	score += 2;
+	setScore(score);
+}
+
+int game::setScore(int s){
+	score = s;
+}
+
+int game::incScore1()
+{
+	int score = getScore();
+	score++;
+	setScore(score);
+}
+
+
+int game::decScore1() {
+	int score = getScore();
+	score--;
+	setScore(score);
+}
+
+int game::getScore() const {
+	return score;
 }
