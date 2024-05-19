@@ -32,11 +32,12 @@ enum ShapeType
 	arrow, //TOP G ARROW SHOW US THE WAY TO SUCCESS BIG TOP G RAAAAAAAAAAAAAAAAAAAAAAAAAAAH
 };
 
+
 enum direction
 {
-	right,
+	Right,
 	up,
-	left,
+	Left,
 	down
 };
 
@@ -58,6 +59,7 @@ public:
 	point getRefPoint();
 	static point multiplyByMatrix(point& p);
 	int getStepCount() const;
+	virtual void setFillColor(color c);
 
 	//-- The following functions should be supported by the shape class
 	//-- It should be overridden by each inherited shape
@@ -68,7 +70,7 @@ public:
 	virtual void resize_up()=0;	//Resize the shape
 	virtual void resize_down()=0;
 	/*virtual void move(direction dir)=0;*/		//Move the shape
-	//virtual void save(ofstream &OutFile) = 0;	//Save the shape parameters to the file
+	virtual void save(ofstream &OutFile)const = 0;	//Save the shape parameters to the file
 	//virtual void load(ifstream &Infile) = 0;	//Load the shape parameters to the file
 
 
