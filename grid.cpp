@@ -117,7 +117,16 @@ shape* grid::getRandomShape() const {
 }
 
 
-
+int grid::getnumofshapes(int level)
+{
+	if (level == 1) 
+		return 1;
+	if (level == 2) 
+		return 3;
+	if (level == 3) 
+		return 5;
+	return 2 * level - 1;
+}
 
 
 void grid::addshapes(int level) {
