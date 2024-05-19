@@ -38,6 +38,9 @@ public:
 	shape* getActiveShape();
 	//void deleteActiveShape(shape* activeShape); //Similar to cpp file
 	void draw_delete() const;
+
+int getnumofshapes(int level);
+
 		void addshapes(int level);
 	int geetshapecount();
 	shape** shapelistt();
