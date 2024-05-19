@@ -1,6 +1,7 @@
 //Header file for Basic shapes in the game
 #pragma once
 #include "shape.h"
+#include <fstream>
 
 ////////////////////////////////////////////////////  class Rect  ///////////////////////////////////////
 //Rectanle class
