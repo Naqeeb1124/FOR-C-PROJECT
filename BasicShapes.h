@@ -18,12 +18,15 @@ class Rect:public shape
 	int hght, wdth;	//height and width of the recangle
 public:
 	Rect(game* r_pGame, point ref, int r_hght, int r_wdth);
+	virtual void setFillColor(color c);
+	virtual void save(ofstream& OutFile)const;
 	virtual void draw() const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
 	bool matches(const shape* target) const;
+virtual bool check_boundries();
 
 };
 
@@ -35,12 +38,15 @@ class circle :public shape
 	//Add data memebrs for class circle
 	int rad;
 public:	
-	circle(game* r_pGame, point ref, int r);	//add more parameters for the constructor if needed
+	circle(game* r_pGame, point ref, int r);
+	void save(ofstream& OutFile) const;
+	virtual void setFillColor(color c);//add more parameters for the constructor if needed
 	virtual void draw() const;
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
 	virtual void rotate();
+virtual bool check_boundries();
 
 };
 
@@ -56,13 +62,17 @@ class triangle :public shape
 	double length_side_3;
 public:
 	triangle(game* r_pGame, point ref, point r_vert2,point r_vert3);	//add more parameters for the constructor if needed
+	virtual void setFillColor(color c);	//add more parameters for the constructor if needed
 	virtual void draw() const;
+	virtual void save(ofstream& OutFile)const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+virtual bool check_boundries();
 	point getVert2();
 	point getVert3();
+	point getvert1();
 	point setvert3(point vert);
 	point setvert2(point vert);
 
@@ -79,11 +89,14 @@ class line :public shape
 
 public:
 	line(game* r_pGame, point ref, point Length);	//add more parameters for the constructor if needed
+		virtual void setFillColor(color c);	//add more parameters for the constructor if needed
 	virtual void draw() const;
+	virtual void save(ofstream& OutFile)const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+virtual bool check_boundries();
 	point getPoint2();
 
 };
@@ -99,10 +112,13 @@ class polygon :public shape
 public:
 	polygon(game* r_pGame, point ref, int r_pline1,int r_pline2,int r_hght);	//add more parameters for the constructor if needed
 	virtual void draw() const;
+	virtual void setFillColor(color c);
+	virtual void save(ofstream& OutFile)const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
+virtual bool check_boundries();
 
 };
 
