@@ -110,6 +110,10 @@ class polygon :public shape
 	int Pline1;
 	int Pline2;
 	int hght;
+	point vertex1;
+	point vertex2;
+	point vertex3;
+	point vertex4;
 public:
 	polygon(game* r_pGame, point ref, int r_pline1,int r_pline2,int r_hght);	//add more parameters for the constructor if needed
 	virtual void draw() const;
@@ -119,7 +123,18 @@ public:
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
-virtual bool check_boundries();
+	virtual bool check_boundries();
+	point setV1(point p);
+	point setV2(point p);
+	point setV3(point p);
+	point setV4(point p);
+	point getV1() const;
+	point getV2() const;
+	point getV3() const;
+	point getV4() const;
+	bool matches(const shape* target) const;
+
+
 
 };
 
