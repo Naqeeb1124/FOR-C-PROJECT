@@ -1,6 +1,7 @@
 #pragma once
 #include "Basicshapes.h"
 
+#include <fstream>
 
 ////////////////////////////////////////////////////  class Sign  ///////////////////////////////////////
 //This class reprsents the composite shape "sign"
