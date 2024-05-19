@@ -1,6 +1,8 @@
 #include "operations.h"
 #include "game.h"
 #include "CompositeShapes.h"
+#include "CMUgraphicsLib/auxil.h"
+#include <fstream>
 /////////////////////////////////// class operation  //////////////////
 operation::operation(game* r_pGame)
 {
@@ -317,24 +319,33 @@ void operDelete::Act()
 
 void operSave::Act()
 {
-	window* pw = pGame->getWind();
+	ofstream OutFile("savefile.txt");
+	if (OutFile.is_open()) {
+		grid* pGrid = pGame->getGrid();
+		shape** shapelist = pGrid->shapelistt();
+		int shapecount = pGrid->geetshapecount();
 
-	//TODO:
-	// Don't allow adding new shape if there is alreday an active shape
+		// Save active shape if any
+		shape* activeShape = pGrid->getActiveShape();
+		if (activeShape) {
+			activeShape->save(OutFile);
+		}
 
-	//align reference point to the nearest grid point
-	int xGrid = config.RefX - config.RefX % config.gridSpacing;
-	int yGrid = config.RefY - config.RefX % config.gridSpacing;
+		// Save all shapes in the grid
+		for (int i = 0; i < shapecount; ++i) {
+			if (shapelist[i]) {
+				shapelist[i]->save(OutFile);
+			}
+		}
 
-	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
+		OutFile.close();
+		pGame->printMessage("Game saved successfully.");
+	}
+	else {
+		pGame->printMessage("Failed to open save file.");
 
-	//create a sign shape
-	shape* psh = new Sign(pGame, signShapeRef);
 
-	//Add the shape to the grid
-	grid* pGrid = pGame->getGrid();
-	pGrid->setActiveShape(psh);
+	}
 
 }
 
