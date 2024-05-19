@@ -3,6 +3,14 @@
 
 class game;
 
+enum level
+{
+	level1,
+	level2,
+	level3,
+	leveln
+};
+
 class grid
 {
 	enum { MaxShapeCount = 1000  };	//assuming max shape count = 1000
@@ -30,6 +38,8 @@ public:
 	shape* getActiveShape();
 	//void deleteActiveShape(shape* activeShape); //Similar to cpp file
 	void draw_delete() const;
-	void addshapes();
+		void addshapes(int level);
+	int geetshapecount();
+	shape** shapelistt();
 };
 
