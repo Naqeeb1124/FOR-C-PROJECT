@@ -27,12 +27,15 @@ class Sign :public shape
 	Rect* top;
 public:
 	Sign(game* r_pGame, point ref);
+virtual void setFillColor(color c);
 	virtual void draw() const;
+virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
 	void move(direction dir) override;
+virtual bool check_boundries();
 
 };
 
@@ -47,13 +50,18 @@ class House :public shape
 	Rect* chimney;
 public:
 	House(game* r_pGame, point ref);
+virtual void setFillColor(color c);
 	virtual void draw() const;
+virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
 	void move(direction dir) override;
+virtual bool check_boundries();
 };
+
+
 
 class Car :public shape
 {
@@ -63,12 +71,15 @@ class Car :public shape
 	circle* backTire;
 public:
 	Car(game* r_pGame, point ref);
+virtual void setFillColor(color c);
 	virtual void draw() const;
+virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
 	void move(direction dir) override;
+	virtual bool check_boundries();
 };
 
 class Boat :public shape
@@ -78,12 +89,15 @@ class Boat :public shape
 	line* mast;
 public:
 	Boat(game* r_pGame, point ref);
+virtual void setFillColor(color c);
 	virtual void draw() const;
+virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
 	void move(direction dir) override;
+virtual bool check_boundries();
 };
 
 class Plane :public shape
@@ -97,12 +111,16 @@ class Plane :public shape
 	triangle* lowStab;
 public:
 	Plane(game* r_pGame, point ref);
+virtual void setFillColor(color c);
 	virtual void draw() const;
+virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
 	void move(direction dir) override;
+	virtual bool check_boundries();
+
 };
 
 class Arrow :public shape
@@ -112,12 +130,15 @@ class Arrow :public shape
 public:
 
 	Arrow(game* r_pGame, point ref);
+virtual void setFillColor(color c);
 	virtual void draw() const;
+virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
 	void move(direction dir) override;
+	virtual bool check_boundries();
 
 };
 
