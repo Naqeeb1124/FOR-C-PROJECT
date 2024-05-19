@@ -12,6 +12,18 @@ Rect::Rect(game* r_pGame, point ref, int r_hght, int r_wdth) :shape(r_pGame, ref
 	wdth = r_wdth;
 }
 
+void Rect::setFillColor(color c)
+{
+	fillColor = c;
+}
+
+void Rect::save(ofstream& OutFile)const
+{
+	OutFile << "RECT " << RefPoint.x << " " << RefPoint.y << " " << hght << " " << wdth << " "
+		<< fillColor.ucRed << " " << fillColor.ucGreen << " " << fillColor.ucBlue << " " << borderColor.ucRed
+		<< " " << borderColor.ucGreen << " " << borderColor.ucBlue << endl;
+}
+
 void Rect::draw() const
 {
 	window* pW = pGame->getWind();	//get interface window
@@ -62,11 +74,43 @@ bool Rect::matches(const shape* target) const {
 	return false;
 }
 
+	bool Rect::check_boundries()
+	{
+		POINT upper_right, lower_left;
+		upper_right.y = RefPoint.y - hght / 2;
+		upper_right.x = RefPoint.x + wdth / 2;
+		lower_left.y = RefPoint.y + hght / 2;
+		lower_left.x = RefPoint.x - wdth / 2;
+		if (upper_right.y > config.remainingHeight || upper_right.y<config.toolBarHeight || lower_left.y>config.remainingHeight || lower_left.y < config.toolBarHeight)
+		{
+			return true;
+		}
+		if (upper_right.x > config.windWidth || upper_right.x < config.wx)
+		{
+			return true;
+		}
+		else
+			return false;
+	}
+
 ////////////////////////////////////////////////////  class circle  ///////////////////////////////////////
 //TODO: Add implementation for class circle here
 circle::circle(game* r_pGame, point ref, int r) :shape(r_pGame, ref)
 {
 	rad = r;
+}
+
+
+void circle::save(ofstream& OutFile) const
+{
+	OutFile << "CIRCLE " << RefPoint.x << " " << RefPoint.y << " " << rad << " " <<
+		fillColor.ucRed << " " << fillColor.ucGreen << " " << fillColor.ucBlue << " " <<
+		borderColor.ucRed << " " << borderColor.ucGreen << " " << borderColor.ucBlue << endl;
+}
+
+void circle::setFillColor(color c)
+{
+	fillColor = c;
 }
 
 void circle::draw() const
@@ -92,6 +136,21 @@ void circle::resize_down()
 	rad /= 2;
 }
 
+bool circle::check_boundries()
+{
+	point upper_right, lower_left;
+	upper_right.x = rad + RefPoint.x;
+	upper_right.y = rad - RefPoint.y;
+	lower_left.x = rad - RefPoint.x;
+	lower_left.y = rad + RefPoint.y;
+	if (upper_right.y > config.remainingHeight || upper_right.y<config.toolBarHeight || lower_left.y>config.remainingHeight || lower_left.y < config.toolBarHeight)
+		return true;
+	if (upper_right.x > config.windWidth || upper_right.x < config.wx || lower_left.x > config.windWidth || lower_left.x < config.wx)
+		return true;
+	else
+		return false;
+}
+
 void circle::flip()
 {
 }
@@ -110,6 +169,18 @@ triangle::triangle(game* r_pGame, point ref,point r_vert2, point r_vert3) :shape
 	vertex1 = ref;
 	vertex2 = r_vert2;
 	vertex3 = r_vert3;
+}
+
+void triangle::setFillColor(color c)
+{
+	fillColor = c;
+}
+
+void triangle::save(ofstream& OutFile) const
+{
+	OutFile << "TRINGLE " << vertex1.x << " " << vertex1.y << " " << vertex2.x << " " << vertex2.y << " "
+		<< vertex3.x << " " << vertex3.y << " " << fillColor.ucRed << " " << fillColor.ucGreen << " " << fillColor.ucBlue <<
+		" " << borderColor.ucRed << " " << borderColor.ucGreen << " " << borderColor.ucBlue << endl;
 }
 
 void triangle::draw() const
@@ -186,13 +257,27 @@ void triangle::flip()
 	vertex3 = temp;
 }
 
-
+bool triangle::check_boundries()
+{
+	point ver1 = getvert1(), ver3 = getVert3(), ver2 = getVert2();
+	if (ver1.y > config.remainingHeight || ver1.y<config.toolBarHeight || ver2.y>config.remainingHeight || ver2.y < config.toolBarHeight || ver3.y>config.remainingHeight || ver3.y < config.toolBarHeight)
+		return true;
+	if (ver1.x > config.windWidth || ver1.x<config.wx || ver2.x>config.windWidth || ver2.x < config.wx || ver3.x>config.windWidth || ver3.x < config.wx)
+		return true;
+	else
+		return false;
+}
 
 
 ////////////////////////////////////////////////////  class line  ///////////////////////////////////////
 line::line(game* r_pGame, point ref, point Length) :shape(r_pGame, ref)
 {
 	lineLength = Length;
+}
+
+void line::setFillColor(color c)
+{
+	fillColor = c;
 }
 
 void line::draw() const {
@@ -202,6 +287,15 @@ void line::draw() const {
 	pW->SetPen(borderColor, config.penWidth);
 	pW->DrawLine(x1, y1, x2, y2);
 }
+
+
+void line::save(ofstream& OutFile) const
+{
+	OutFile << "LINE " << RefPoint.x << " " << RefPoint.y << " " << lineLength.x << " " << lineLength.y << " "
+		<< fillColor.ucRed << " " << fillColor.ucGreen << " " << fillColor.ucBlue << " " <<
+		borderColor.ucRed << " " << borderColor.ucGreen << " " << borderColor.ucBlue << endl;
+}
+
 
 void line::rotate()
 {
@@ -229,6 +323,17 @@ void line::resize_down()
 	lineLength.y /= 2;	//////ISSUE
 }
 
+bool line::check_boundries()
+{
+	point point1 = RefPoint, point2 = lineLength;
+	if (point2.x > config.windWidth || point2.x<config.wx || point1.x>config.windWidth || point1.x < config.wx)
+		return true;
+	if (point1.y > config.remainingHeight || point2.y > config.remainingHeight || point1.y < config.toolBarHeight || point2.y < config.toolBarHeight)
+		return true;
+	else
+		return false;
+}
+
 void line::flip()
 {
 
@@ -246,6 +351,14 @@ polygon::polygon(game* r_pGame, point ref, int r_pline1, int r_pline2, int r_hgh
 
 }
 
+void polygon::save(ofstream& OutFile) const
+{
+	OutFile << "POLYGON " << RefPoint.x << " " << RefPoint.y << " " << Pline1 << " " << Pline2 << " " << hght << " " <<
+		fillColor.ucRed << " " << fillColor.ucGreen << " " << fillColor.ucBlue << " " << borderColor.ucRed << " " <<
+		borderColor.ucGreen << " " << borderColor.ucBlue << endl;
+}
+
+
 void polygon::draw() const
 {
 	int x1 = RefPoint.x - (Pline1 / 2), x2 = RefPoint.x + (Pline1 / 2), x3 = RefPoint.x - (Pline2 / 2), x4 = RefPoint.x + (Pline2 / 2);
@@ -258,6 +371,11 @@ void polygon::draw() const
 	pW->SetBrush(fillColor);
 	pW->DrawPolygon(x_coordinates_array, y_coordinates_array,4, FILLED);
 
+}
+
+void polygon::setFillColor(color c)
+{
+	fillColor = c;
 }
 
 void polygon::rotate()
@@ -287,4 +405,23 @@ void polygon::flip()
 	temp = Pline1;
 	Pline1 = Pline2;
 	Pline2 = temp;
+}
+
+bool polygon::check_boundries()
+{
+	point upper_right, upper_left, upper, lower_right, lower_left;
+	upper_right = { Pline1 / 2 + RefPoint.x,hght / 2 - RefPoint.y };
+	upper_left = { Pline1 / 2 - RefPoint.x,hght / 2 - RefPoint.y };
+	lower_right = { Pline2 / 2 + RefPoint.x,hght / 2 + RefPoint.y };
+	lower_left = { Pline2 / 2 - RefPoint.x,hght / 2 + RefPoint.y };
+	if (upper_right.x > config.windWidth || upper_left.x<config.wx || upper_left.x>config.windWidth || upper_right.x < config.wx)
+		return true;
+	if (lower_right.x > config.windWidth || lower_left.x<config.wx || lower_left.x>config.windWidth || lower_right.x < config.wx)
+		return true;
+	if (upper_right.y > config.remainingHeight || upper_left.y<config.toolBarHeight || upper_left.y>config.remainingHeight || upper_right.y < config.toolBarHeight)
+		return true;
+	if (lower_right.y > config.remainingHeight || lower_left.y<config.toolBarHeight || lower_left.y>config.remainingHeight || lower_right.y < config.toolBarHeight)
+		return true;
+	else
+		return false;
 }
