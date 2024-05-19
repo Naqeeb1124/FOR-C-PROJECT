@@ -362,16 +362,13 @@ void polygon::save(ofstream& OutFile) const
 
 void polygon::draw() const
 {
-	int x1 = RefPoint.x - (Pline1 / 2), x2 = RefPoint.x + (Pline1 / 2), x3 = RefPoint.x - (Pline2 / 2), x4 = RefPoint.x + (Pline2 / 2);
-	int y1 = RefPoint.y + (hght / 2), y2 = RefPoint.y - (hght / 2);
-	const int x_coordinates_array[4] = { x3,x1,x2,x4 };
-	const int y_coordinates_array[4] = { y1,y2,y2,y1 };
+	const int x_coordinates_array[4] = { vertex1.x, vertex2.x,vertex3.x,vertex4.x };
+	const int y_coordinates_array[4] = { vertex1.y, vertex2.y, vertex3.y, vertex4.y };
 
 	window* pW = pGame->getWind();
 	pW->SetPen(borderColor, config.penWidth);
 	pW->SetBrush(fillColor);
 	pW->DrawPolygon(x_coordinates_array, y_coordinates_array,4, FILLED);
-
 }
 
 void polygon::setFillColor(color c)
@@ -381,7 +378,27 @@ void polygon::setFillColor(color c)
 
 void polygon::rotate()
 {
+	//apply the same procedure as from triangle.
 
+	point rV1 = { vertex1.x - RefPoint.x, vertex1.y - RefPoint.y };
+	point rV2 = { vertex2.x - RefPoint.x, vertex2.y - RefPoint.y };
+	point rV3 = { vertex3.x - RefPoint.x, vertex3.y - RefPoint.y };
+	point rV4 = { vertex4.x - RefPoint.x, vertex4.y - RefPoint.y };
+
+	point rotatedV1 = multiplyByMatrix(rV1);
+	point rotatedV2 = multiplyByMatrix(rV2);
+	point rotatedV3 = multiplyByMatrix(rV3);
+	point rotatedV4 = multiplyByMatrix(rV4);
+
+	
+	vertex1.x = RefPoint.x + rotatedV1.x;
+	vertex1.y = RefPoint.y + rotatedV1.y;
+	vertex2.x = RefPoint.x + rotatedV2.x;
+	vertex2.y = RefPoint.y + rotatedV2.y;
+	vertex3.x = RefPoint.x + rotatedV3.x;
+	vertex3.y = RefPoint.y + rotatedV3.y;
+	vertex4.x = RefPoint.x + rotatedV4.x;
+	vertex4.y = RefPoint.y + rotatedV4.y;
 }
 
 
