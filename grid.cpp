@@ -119,95 +119,79 @@ shape* grid::getRandomShape() const {
 
 
 
-void grid::addshapes()
-{
-	toolbar* toool = pGame->gettoolbar();
-	int level = toool->getlevel();
-	int numShapesToAdd = 0;
 
-	switch (level-1)
-	{
-	case level1:
-		numShapesToAdd = 1;
-		break;
-	case level2:
-		numShapesToAdd = 3;
-		break;
-	case level3:
-		numShapesToAdd = 5;
-		break;
-	case leveln:
-		numShapesToAdd = 2 * level - 1;
-		break;
-	default:
-		return; 
-	}
+void grid::addshapes(int level) {
+	int numShapesToAdd = getnumofshapes(level);
+	color shapecolor;
 
-	for (int i = 0; i < numShapesToAdd; i++)
-	{
-		int randomNum = rand() % 6; // Generate a new random number for each shape
-		point randomPoint = { config.ranRefx,config.ranRefy };
+	for (int i = 0; i < numShapesToAdd; i++) {
+		int shapeType = rand() % 6;
 		shape* newShape = nullptr;
-		switch (randomNum)
-		{
-		case 0: 
-			newShape = new House(pGame, randomPoint); 
-			break;
-		case 1: 
-			newShape = new Sign(pGame, randomPoint); 
-			break;
-		case 2: 
-			newShape = new Boat(pGame, randomPoint); 
-			break;
-		case 3: 
-			newShape = new Plane(pGame, randomPoint); 
-			break;
-		case 4: 
-			newShape = new Car(pGame, randomPoint); 
-			break;
-		case 5: 
-			newShape = new Arrow(pGame, randomPoint); 
-			break;
-		}
+		point randomPoint;
+
+		do {
+			int ranRefx = (rand() % (width - 10)) + uprLeft.x + 30;
+			int ranRefy = (rand() % (height - 10)) + uprLeft.y + 30;
+			randomPoint = { ranRefx, ranRefy };
+
+			if (level >= 3) {
+				shapecolor = BLACK;
+			}
+			else {
+				shapecolor = color(rand() % 256, rand() % 256, rand() % 256);
+			}
+
+			switch (shapeType) {
+			case 0: newShape = new House(pGame, randomPoint); break;
+			case 1: newShape = new Sign(pGame, randomPoint); break;
+			case 2: newShape = new Boat(pGame, randomPoint); break;
+			case 3: newShape = new Plane(pGame, randomPoint); break;
+			case 4: newShape = new Car(pGame, randomPoint); break;
+			case 5: newShape = new Arrow(pGame, randomPoint); break;
+			}
+
+			if (newShape) {
+				newShape->setFillColor(shapecolor);
+
+				bool shouldRotate = rand() % 2;
+				if (shouldRotate) {
+					newShape->flip();
+				}
+
+				bool shouldResize = rand() % 2;
+				if (shouldResize) {
+					int upordown = rand() % 2;
+					if (upordown == 0) {
+						newShape->resize_down();
+					}
+					else {
+						newShape->resize_up();
+					}
+				}
+			}
+		} while (newShape && newShape->check_boundries());
+
 		if (newShape) {
-			int rotate = rand() % 3;
-			switch (rotate)
-			{case 1:
-				newShape->resize_up();
-				break;
-			case 2:
-				newShape->resize_down();
-			case 3:
-				newShape->rotate();
-				break;
-			default:
-				break;
-			}
-			int rotate = rand() % 3;
-			switch (rotate)
-			{case 1:
-				newShape->rotate();
-				break;
-			case 2:
-				newShape->rotate();
-				newShape->rotate();
-				break;
-			case 3:
-				newShape->rotate();
-				newShape->rotate();
-				newShape->rotate();
-				break;
-			default:
-				break;
-			}
-			
 			addShape(newShape);
-		} 
-		else {
-			delete newShape; // Failed to add shape, delete it
 		}
 	}
 }
+
+
+
+int grid::geetshapecount()
+{
+	return shapeCount;
+}
+
+shape** grid::shapelistt()
+{
+	return shapeList;
+}
+
+
+
+
 
 
 
