@@ -13,6 +13,20 @@ Sign::Sign(game* r_pGame, point ref):shape(r_pGame, ref)
 	base = new Rect(pGame, baseRef, config.sighShape.baseHeight, config.sighShape.baseWdth);
 }
 
+void Sign::setFillColor(color c)
+{
+	fillColor = c;
+}
+
+void Sign::save(ofstream& OutFile) const
+{
+	OutFile << "SIGN " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
+		" " << resizeDownCount << " " << movecount << endl;
+	top->save(OutFile);
+	base->save(OutFile);
+}
+
+
 void Sign::draw() const
 {
 	base->draw();
@@ -32,6 +46,7 @@ void Sign::rotate()
 	base->rotate();
 
 	stepCount++;
+	rotateCount++;
 }
 void Sign::resize_up()
 {
@@ -43,7 +58,7 @@ void Sign::resize_up()
 	top->resize_up();
 
 	stepCount++;
-
+resizeUpCount++;
 }
 
 void Sign::resize_down()
@@ -56,7 +71,7 @@ void Sign::resize_down()
 	top->resize_down();
 
 	stepCount++;
-
+resizeDownCount++;
 }
 
 void Sign::flip()
@@ -69,7 +84,7 @@ void Sign::flip()
 	base->setRefPoint(newbaseref);
 
 	stepCount++;
-
+	flipCount++;
 }
 
 void Sign::move(direction dir)
@@ -78,7 +93,12 @@ void Sign::move(direction dir)
 	top->move(dir);
 
 	stepCount++;
-
+movecount++;
+}
+bool Sign::check_boundries()
+{
+	return  base->check_boundries();
+	return top->check_boundries();
 }
 
 bool Sign::matches(const shape* target) const {
@@ -107,6 +127,22 @@ House::House(game* r_pGame, point ref) :shape(r_pGame, ref)
 
 
 }
+
+void House::setFillColor(color c)
+{
+	fillColor = c;
+}
+
+
+void House::save(ofstream& OutFile) const
+{
+	OutFile << "HOUSE " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
+		" " << resizeDownCount << " " << movecount << endl;
+	base->save(OutFile);
+	roof->save(OutFile);
+	chimney->save(OutFile);
+}
+
 
 void House::draw() const
 {
@@ -152,6 +188,7 @@ void House::rotate() {
 	chimney->rotate();
 
 	stepCount++;
+	rotateCount++;
 
 }
 
@@ -169,6 +206,7 @@ void House::resize_up()
 	chimney->resize_up();
 
 	stepCount++;
+	resizeUpCount++;
 
 }
 
@@ -188,6 +226,7 @@ void House::resize_down()
 	chimney->resize_down();
 
 	stepCount++;
+	resizeDownCount++;
 
 
 }
@@ -208,7 +247,7 @@ void House::flip()
 	base->setRefPoint(newbaseref);
 
 	stepCount++;
-
+	flipCount++;
 	
 }
 
@@ -238,8 +277,16 @@ void House::move(direction dir){
 	chimney->move(dir);
 
 	stepCount++;
-
+movecount++;
 }
+
+bool House::check_boundries()
+{
+	return	base -> check_boundries();
+	return roof->check_boundries();
+	return chimney->check_boundries();
+}
+
 
 bool House::matches(const shape* target) const {
 	const House* targetHouse = dynamic_cast<const House*>(target);
@@ -274,6 +321,25 @@ Car::Car(game* r_pGame, point ref) :shape(r_pGame, ref)
 	frontTire = new circle(pGame, fTireRef, config.carShape.tireRadius);
 	backTire = new circle(pGame, bTireRef, config.carShape.tireRadius);
 };
+
+
+void Car::setFillColor(color c)
+{
+	fillColor = c;
+}
+;
+
+
+
+void Car::save(ofstream& OutFile) const
+{
+	OutFile << "CAR " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
+		" " << resizeDownCount << " " << movecount << endl;
+	lowBody->save(OutFile);
+	upBody->save(OutFile);
+	frontTire->save(OutFile);
+	backTire->save(OutFile);
+
 
 void Car::draw() const
 {
@@ -318,6 +384,7 @@ void Car::rotate()
 	upBody->rotate();
 
 	stepCount++;
+	rotateCount++;
 
 
 }
@@ -338,6 +405,7 @@ void Car::flip()
 	backTire->setRefPoint(newrLcircle);
 
 	stepCount++;
+		flipCount++;
 
 }
 
@@ -349,9 +417,16 @@ void Car::move(direction dir)
 	backTire->move(dir);
 
 	stepCount++;
-
+movecount++;
 }
 
+bool Car::check_boundries()
+{
+	return lowBody->check_boundries();
+	return upBody->check_boundries();
+	return frontTire->check_boundries();
+	return backTire->check_boundries();
+}
 
 void Car::resize_up()
 {
@@ -370,6 +445,7 @@ void Car::resize_up()
 	backTire->resize_up();
 
 	stepCount++;
+	resizeUpCount++;
 
 }
 
@@ -390,6 +466,7 @@ void Car::resize_down()
 	backTire->resize_down();
 
 	stepCount++;
+	resizeDownCount++;
 
 	
 }
@@ -410,6 +487,23 @@ Boat::Boat(game* r_pGame, point ref) :shape(r_pGame, ref)
 	sail = new triangle(pGame, sailRef, sail2, sail3);
 	mast = new line(pGame, mastRef, { mastRef.x, mastRef.y - config.boatShape.mastHeight});
 };
+
+void Boat::setFillColor(color c)
+{
+	fillColor = c;
+}
+;
+
+
+void Boat::save(ofstream& OutFile) const
+{
+	OutFile << "BOAT " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
+		" " << resizeDownCount << " " << movecount << endl;
+	hull->save(OutFile);
+	sail->save(OutFile);
+	mast->save(OutFile);
+}
+
 
 void Boat::draw() const
 {
@@ -454,6 +548,7 @@ void Boat::rotate()
 	mast = new line(pGame, newMastRef, newMast2);
 
 	stepCount++;
+	rotateCount++;
 
 }
 
@@ -474,7 +569,7 @@ void Boat::flip()
 	sail->setvert3(vert33);
 
 	stepCount++;
-
+	flipCount++;
 }
 
 void Boat::move(direction dir)
@@ -508,8 +603,17 @@ void Boat::move(direction dir)
 
 
 	stepCount++;
-
+movecount++;
 }
+
+
+bool Boat::check_boundries()
+{
+	return sail->check_boundries();
+	return hull->check_boundries();
+	return mast->check_boundries();
+}
+
 
 void Boat::resize_up()
 {
@@ -526,7 +630,7 @@ void Boat::resize_up()
 
 
 	stepCount++;
-
+resizeUpCount++;
 	
 }
 
@@ -545,6 +649,7 @@ void Boat::resize_down()
 
 
 	stepCount++;
+	resizeDownCount++;
 
 }
 
@@ -582,6 +687,27 @@ Plane::Plane(game* r_pGame, point ref) :shape(r_pGame, ref)
 	upStab = new triangle(pGame, upStabRef, upStab2, upstab3);
 	lowStab = new triangle(pGame, lowStabRef, lowStab2, lowStab3);
 }
+
+void Plane::setFillColor(color c)
+{
+	fillColor = c;
+}
+
+
+void Plane::save(ofstream& OutFile) const
+{
+	OutFile << "PLANE  " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
+		" " << resizeDownCount << " " << movecount << endl;
+	fuselage->save(OutFile);
+	nose->save(OutFile);
+	tail->save(OutFile);
+	upWing->save(OutFile);
+	bottomWing->save(OutFile);
+	upStab->save(OutFile);
+	lowStab->save(OutFile);
+}
+
+
 
 void Plane::draw() const
 {
@@ -712,6 +838,7 @@ void Plane::rotate()
 	lowStab = new triangle(pGame, newLowStabRef, newLowStab2, newLowStab3);
 
 	stepCount++;
+	rotateCount++;
 
 }
 
@@ -755,7 +882,7 @@ void Plane::resize_up()
 	lowStab->resize_up();
 
 	stepCount++;
-
+resizeUpCount++;
 }
 
 void Plane::resize_down()
@@ -792,6 +919,7 @@ void Plane::resize_down()
 	fuselage->resize_down();
 
 	stepCount++;
+	resizeDownCount++;
 
 	}
 
@@ -841,7 +969,7 @@ void Plane::flip()
 	lowStab->setvert3(newlowsta3);
 
 	stepCount++;
-
+	flipCount++;
 
 }
 
@@ -893,7 +1021,18 @@ void Plane::move(direction dir)
 
 
 	 stepCount++;
+movecount++;
+}
 
+bool Plane::check_boundries()
+{
+	 return nose->check_boundries();
+	 return tail->check_boundries();
+	 return upWing->check_boundries();
+	 return bottomWing->check_boundries();
+	 return upStab->check_boundries();
+	 return lowStab->check_boundries();
+	 return fuselage->check_boundries();
 }
 
 
@@ -908,6 +1047,21 @@ Arrow::Arrow(game* r_pGame, point ref) :shape(r_pGame, ref)
 	point head3 = { headRef.x + config.arrowShape.headWdth, headRef.y + config.arrowShape.headHeight / 2 };
 	head = new triangle(pGame, headRef, head2, head3);
 };
+
+void Arrow::setFillColor(color c)
+{
+	fillColor = c;
+}
+;
+
+void Arrow::save(ofstream& OutFile) const
+{
+	OutFile << "ARROW " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
+		" " << resizeDownCount << " " << movecount << endl;
+	shaft->save(OutFile);
+	head->save(OutFile);
+}
+
 
 void Arrow::draw() const
 {
@@ -941,6 +1095,7 @@ void Arrow::rotate()
 
 
 	stepCount++;
+	rotateCount++;
 
 
 }
@@ -959,7 +1114,7 @@ void Arrow::resize_up()
 	head->resize_up();
 
 	stepCount++;
-
+resizeUpCount++;
 }
 
 void Arrow::resize_down()
@@ -975,6 +1130,7 @@ void Arrow::resize_down()
 	shaft->resize_down();
 
 	stepCount++;
+	resizeDownCount++;
 
 	
 }
@@ -985,7 +1141,7 @@ void Arrow::flip()
 	head->flip();
 
 	stepCount++;
-
+	flipCount++;
 }
 
 void Arrow::move(direction dir)
@@ -1012,6 +1168,13 @@ void Arrow::move(direction dir)
 	shaft->move(dir);
 
 	stepCount++;
-
+movecount++;
 }
+
+bool Arrow::check_boundries()
+{
+	return head->check_boundries();
+	return shaft->check_boundries();
+}
+
 
