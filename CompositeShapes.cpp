@@ -1,11 +1,8 @@
 #include "CompositeShapes.h"
-#include "gameConfig.h"
-#include <fstream>
-
 
 
 ////////////////////////////////////////////////////  class Sign  ///////////////////////////////////////
-Sign::Sign(game* r_pGame, point ref):shape(r_pGame, ref)
+Sign::Sign(game* r_pGame, point ref) :shape(r_pGame, ref)
 {
 	//calc the ref point of the Sign base and top rectangles relative to the Sign shape
 	point topRef = ref;	//top rect ref is the same as the sign
@@ -13,20 +10,6 @@ Sign::Sign(game* r_pGame, point ref):shape(r_pGame, ref)
 	top = new Rect(pGame, topRef, config.sighShape.topHeight, config.sighShape.topWdth);
 	base = new Rect(pGame, baseRef, config.sighShape.baseHeight, config.sighShape.baseWdth);
 }
-
-void Sign::setFillColor(color c)
-{
-	fillColor = c;
-}
-
-void Sign::save(ofstream& OutFile) const
-{
-	OutFile << "SIGN " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
-		" " << resizeDownCount << " " << movecount << endl;
-	top->save(OutFile);
-	base->save(OutFile);
-}
-
 
 void Sign::draw() const
 {
@@ -42,37 +25,36 @@ void Sign::rotate()
 	point baseRef = base->getRefPoint();
 	point relativeBaseRef = { baseRef.x - topRef.x, baseRef.y - topRef.y };
 	point rotatedRelativeBaseRef = multiplyByMatrix(relativeBaseRef);
-	point newBaseRef = {topRef.x + rotatedRelativeBaseRef.x,topRef.y + rotatedRelativeBaseRef.y };
+	point newBaseRef = { topRef.x + rotatedRelativeBaseRef.x,topRef.y + rotatedRelativeBaseRef.y };
 	base->setRefPoint(newBaseRef);
 	base->rotate();
 
 	stepCount++;
-	rotateCount++;
 }
 void Sign::resize_up()
 {
 	point topRef = RefPoint;	//top rect ref is the same as the sign
-	point baseRef = { RefPoint.x, RefPoint.y + config.sighShape.topHeight  + config.sighShape.baseHeight  };
+	point baseRef = { RefPoint.x, RefPoint.y + config.sighShape.topHeight + config.sighShape.baseHeight };
 	top = new Rect(pGame, topRef, config.sighShape.topHeight, config.sighShape.topWdth);
 	base = new Rect(pGame, baseRef, config.sighShape.baseHeight, config.sighShape.baseWdth);
 	base->resize_up();
 	top->resize_up();
 
 	stepCount++;
-resizeUpCount++;
+
 }
 
 void Sign::resize_down()
 {
 	point topRef = RefPoint;	//top rect ref is the same as the sign
-	point baseRef = { RefPoint.x, RefPoint.y + config.sighShape.topHeight/4 + config.sighShape.baseHeight/4 };
+	point baseRef = { RefPoint.x, RefPoint.y + config.sighShape.topHeight / 4 + config.sighShape.baseHeight / 4 };
 	top = new Rect(pGame, topRef, config.sighShape.topHeight, config.sighShape.topWdth);
 	base = new Rect(pGame, baseRef, config.sighShape.baseHeight, config.sighShape.baseWdth);
 	base->resize_down();
 	top->resize_down();
 
 	stepCount++;
-resizeDownCount++;
+
 }
 
 void Sign::flip()
@@ -85,32 +67,43 @@ void Sign::flip()
 	base->setRefPoint(newbaseref);
 
 	stepCount++;
-	flipCount++;
+
 }
 
 void Sign::move(direction dir)
 {
-	base->move(dir);
-	top->move(dir);
+	switch (dir) {
+	case Up:
+		base->move(Up);
+		top->move(Up);
+		break;
+	case Down:
+		base->move(Down);
+		top->move(Down);
+		break;
+	case Right:
+		base->move(Right);
+		top->move(Right);
+		break;
+	case Left:
+		base->move(Left);
+		top->move(Left);
+		break;
+	}
 
 	stepCount++;
-movecount++;
-}
-bool Sign::check_boundries()
-{
-	return  base->check_boundries();
-	return top->check_boundries();
+
 }
 
 bool Sign::matches(const shape* target) const {
 	const Sign* targetSign = dynamic_cast<const Sign*>(target);
 	if (targetSign) {
-		// Compare top and base rectangles
 		return top->matches(targetSign->top) && base->matches(targetSign->base);
+
 	}
+
 	return false;
 }
-
 
 
 /////////////////////////////////THIS BELOW SECTION IS ENTIRELY BY ABDELRAHMAN MOHAMMED ////////////////////////////////////
@@ -119,31 +112,15 @@ House::House(game* r_pGame, point ref) :shape(r_pGame, ref)
 {
 	point baseref = ref;
 	point roofRef = { ref.x - config.houseShape.roofWdth / 2, ref.y - config.houseShape.baseHeight / 2 };
-	point chimneyRef = { ref.x - config.houseShape.baseWdth /4, ref.y - config.houseShape.baseHeight / 2 - config.houseShape.chimneyHeight / 2 };
+	point chimneyRef = { ref.x - config.houseShape.baseWdth / 4, ref.y - config.houseShape.baseHeight / 2 - config.houseShape.chimneyHeight / 2 };
 	point roof2 = { roofRef.x + config.houseShape.roofWdth,roofRef.y };
 	point roof3 = { roofRef.x + config.houseShape.roofWdth / 2,roofRef.y - config.houseShape.roofHeight };
 	base = new Rect(pGame, baseref, config.houseShape.baseHeight, config.houseShape.baseWdth);
-	roof = new triangle(pGame,roofRef, roof2, roof3);
+	roof = new triangle(pGame, roofRef, roof2, roof3);
 	chimney = new Rect(pGame, chimneyRef, config.houseShape.chimneyHeight, config.houseShape.chimneyWdth);
 
 
 }
-
-void House::setFillColor(color c)
-{
-	fillColor = c;
-}
-
-
-void House::save(ofstream& OutFile) const
-{
-	OutFile << "HOUSE " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
-		" " << resizeDownCount << " " << movecount << endl;
-	base->save(OutFile);
-	roof->save(OutFile);
-	chimney->save(OutFile);
-}
-
 
 void House::draw() const
 {
@@ -153,17 +130,17 @@ void House::draw() const
 }
 
 void House::rotate() {
-	
+
 	point baseRef = base->getRefPoint();
 	base->rotate();
 
 
 	point roofRef = roof->getRefPoint();
-	point relativeRoofRef = {roofRef.x - baseRef.x, roofRef.y - baseRef.y };
+	point relativeRoofRef = { roofRef.x - baseRef.x, roofRef.y - baseRef.y };
 	point rotatedRelativeRoofRef = multiplyByMatrix(relativeRoofRef);
 	point newRoofRef = { baseRef.x + rotatedRelativeRoofRef.x, baseRef.y + rotatedRelativeRoofRef.y };
 	roof->setRefPoint(newRoofRef);
-	
+
 	point roof2 = roof->getVert2();
 
 	point relVert2 = { roof2.x - baseRef.x, roof2.y - baseRef.y };
@@ -175,7 +152,7 @@ void House::rotate() {
 	point relVert3 = { roof3.x - baseRef.x, roof3.y - baseRef.y };
 	point rotRelVert3 = multiplyByMatrix(relVert3);
 	point newRoof3 = { baseRef.x + rotRelVert3.x, baseRef.y + rotRelVert3.y };
-
+	delete roof;
 	roof = new triangle(pGame, newRoofRef, newRoof2, newRoof3);
 
 
@@ -189,17 +166,16 @@ void House::rotate() {
 	chimney->rotate();
 
 	stepCount++;
-	rotateCount++;
 
 }
 
 void House::resize_up()
 {
 	point baseref = RefPoint;
-	point roofRef = { RefPoint.x - config.houseShape.roofWdth , RefPoint.y - config.houseShape.baseHeight  };
-	point chimneyRef = { RefPoint.x - config.houseShape.baseWdth / 2, RefPoint.y - config.houseShape.baseHeight  - config.houseShape.chimneyHeight  };
-	point roof2 = { roofRef.x + config.houseShape.roofWdth*2,roofRef.y };
-	point roof3 = { roofRef.x + config.houseShape.roofWdth ,roofRef.y - config.houseShape.roofHeight*2 };
+	point roofRef = { RefPoint.x - config.houseShape.roofWdth , RefPoint.y - config.houseShape.baseHeight };
+	point chimneyRef = { RefPoint.x - config.houseShape.baseWdth / 2, RefPoint.y - config.houseShape.baseHeight - config.houseShape.chimneyHeight };
+	point roof2 = { roofRef.x + config.houseShape.roofWdth * 2,roofRef.y };
+	point roof3 = { roofRef.x + config.houseShape.roofWdth ,roofRef.y - config.houseShape.roofHeight * 2 };
 	base = new Rect(pGame, baseref, config.houseShape.baseHeight, config.houseShape.baseWdth);
 	roof = new triangle(pGame, roofRef, roof2, roof3);
 	chimney = new Rect(pGame, chimneyRef, config.houseShape.chimneyHeight, config.houseShape.chimneyWdth);
@@ -207,8 +183,6 @@ void House::resize_up()
 	chimney->resize_up();
 
 	stepCount++;
-	resizeUpCount++;
-
 }
 
 void House::resize_down()
@@ -216,8 +190,8 @@ void House::resize_down()
 	point baseref = RefPoint;
 	point roofRef = { RefPoint.x - config.houseShape.roofWdth / 4, RefPoint.y - config.houseShape.baseHeight / 4 };
 	point chimneyRef = { RefPoint.x - config.houseShape.baseWdth / 8, RefPoint.y - config.houseShape.baseHeight / 4 - config.houseShape.chimneyHeight / 4 };
-	point roof2 = { roofRef.x + config.houseShape.roofWdth/2,roofRef.y };
-	point roof3 = { roofRef.x + config.houseShape.roofWdth / 4,roofRef.y - config.houseShape.roofHeight/2 };
+	point roof2 = { roofRef.x + config.houseShape.roofWdth / 2,roofRef.y };
+	point roof3 = { roofRef.x + config.houseShape.roofWdth / 4,roofRef.y - config.houseShape.roofHeight / 2 };
 	base = new Rect(pGame, baseref, config.houseShape.baseHeight, config.houseShape.baseWdth);
 	roof = new triangle(pGame, roofRef, roof2, roof3);
 	chimney = new Rect(pGame, chimneyRef, config.houseShape.chimneyHeight, config.houseShape.chimneyWdth);
@@ -227,14 +201,13 @@ void House::resize_down()
 	chimney->resize_down();
 
 	stepCount++;
-	resizeDownCount++;
 
 
 }
 
 void House::flip()
 {
-	
+
 	point baseref = base->getRefPoint();
 	base->flip();
 	point roofref = roof->getRefPoint();
@@ -248,63 +221,48 @@ void House::flip()
 	base->setRefPoint(newbaseref);
 
 	stepCount++;
-	flipCount++;
-	
+
+
 }
 
-void House::move(direction dir){
-	
-	
-		switch (dir)
-		{
-		case right:
-			RefPoint.x += config.gridSpacing;
-			break;
-		case up:
-			RefPoint.y += config.gridSpacing;
-			break;
-		case left:
-			RefPoint.x -= config.gridSpacing;
-			break;
-		case down:
-			RefPoint.y -= config.gridSpacing;
-			break;
-		}
-		point roofRef = { RefPoint.x - config.houseShape.roofWdth / 2, RefPoint.y - config.houseShape.baseHeight / 2 };
-		point roof2 = { roofRef.x + config.houseShape.roofWdth,roofRef.y };
-		point roof3 = { roofRef.x + config.houseShape.roofWdth / 2,roofRef.y - config.houseShape.roofHeight };
-		roof = new triangle(pGame, roofRef, roof2, roof3);
-	base->move(dir);
-	chimney->move(dir);
-
-	stepCount++;
-movecount++;
-}
-
-bool House::check_boundries()
+void House::move(direction dir)
 {
-	return	base -> check_boundries();
-	return roof->check_boundries();
-	return chimney->check_boundries();
-}
+	switch (dir) {
+	case Up:
+		base->move(Up);
 
-
-bool House::matches(const shape* target) const {
-	const House* targetHouse = dynamic_cast<const House*>(target);
-	if (targetHouse) {
-		// Compare base, roof, and chimney
-		return base->matches(targetHouse->base) &&
-			roof->matches(targetHouse->roof) &&
-			chimney->matches(targetHouse->chimney);
+		roof->move(Up);
+		//delete roof;
+		//roof = new triangle(pGame, {roof->getVert2());
+		chimney->move(Up);
+		break;
+	case Down:
+		base->move(Down);
+		roof->move(Down);
+		chimney->move(Down);
+		break;
+	case Right:
+		base->move(Right);
+		roof->move(Right);
+		chimney->move(Right);
+		break;
+	case Left:
+		base->move(Left);
+		roof->move(Left);
+		chimney->move(Left);
+		break;
 	}
-	return false;
+	stepCount++;
+
 }
+
 
 
 bool House::matches(const shape* target) const {
 	const House* targetHouse = dynamic_cast<const House*>(target);
 	if (targetHouse) {
-		return roof->matches(targetHouse->roof) && base->matches(targetHouse->base) && chimney->matches(targetHouse->chimney);
+		return base->matches(targetHouse->base) && roof->matches(targetHouse->roof) && chimney->matches(targetHouse->chimney);
+
 	}
 	return false;
 }
@@ -315,79 +273,94 @@ Car::Car(game* r_pGame, point ref) :shape(r_pGame, ref)
 { //by back i mean left and front is right
 	point bottomRef = ref;
 	point topRef = { ref.x, ref.y - config.carShape.lowHeight / 2 - config.carShape.upHeight / 2 };
-	point bTireRef = {ref.x - config.carShape.lowWdth/4, ref.y + config.carShape.lowHeight/2};
+	point up1Ref = { topRef.x - config.carShape.upTOPWdth / 2, topRef.y + config.carShape.upHeight / 2 };
+	point up2Ref = { topRef.x + config.carShape.upTOPWdth / 2, topRef.y + config.carShape.upHeight / 2 };
+	point bTireRef = { ref.x - config.carShape.lowWdth / 4, ref.y + config.carShape.lowHeight / 2 };
 	point fTireRef = { ref.x + config.carShape.lowWdth / 4, ref.y + config.carShape.lowHeight / 2 };
+	point up12 = { up1Ref.x - (config.carShape.upBOTWdth - config.carShape.upTOPWdth) / 2, up1Ref.y };
+	point up22 = { up2Ref.x + (config.carShape.upBOTWdth - config.carShape.upTOPWdth) / 2, up2Ref.y };
+	point up13 = { up1Ref.x, up1Ref.y - config.carShape.upHeight };
+	point up23 = { up2Ref.x, up2Ref.y - config.carShape.upHeight };
+
+
 	lowBody = new Rect(pGame, bottomRef, config.carShape.lowHeight, config.carShape.lowWdth);
-	upBody = new polygon(pGame, topRef, config.carShape.upTOPWdth, config.carShape.upBOTWdth, config.carShape.upHeight);
+	upBody = new Rect(pGame, topRef, config.carShape.upHeight, config.carShape.upTOPWdth);
+	upBody1 = new triangle(pGame, up1Ref, up12, up13);
+	upBody2 = new triangle(pGame, up2Ref, up22, up23);
 	frontTire = new circle(pGame, fTireRef, config.carShape.tireRadius);
 	backTire = new circle(pGame, bTireRef, config.carShape.tireRadius);
 };
-
-
-void Car::setFillColor(color c)
-{
-	fillColor = c;
-}
-;
-
-
-
-void Car::save(ofstream& OutFile) const
-{
-	OutFile << "CAR " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
-		" " << resizeDownCount << " " << movecount << endl;
-	lowBody->save(OutFile);
-	upBody->save(OutFile);
-	frontTire->save(OutFile);
-	backTire->save(OutFile);
-
 
 void Car::draw() const
 {
 	lowBody->draw();
 	upBody->draw();
+	upBody1->draw();
+	upBody2->draw();
 	frontTire->draw();
 	backTire->draw();
 }
 
-void Car::rotate()
-{
-	point ref = lowBody->getRefPoint();
-
-	point topRef = upBody->getRefPoint();
-
-	point relTopRef = { topRef.x - ref.x, topRef.y - ref.y };
-	point rotatedRelativeTopRef = upBody->multiplyByMatrix(relTopRef);
-	topRef.x = ref.x + rotatedRelativeTopRef.x;
-	topRef.y = ref.y + rotatedRelativeTopRef.y;
-	upBody->setRefPoint(topRef);
-
-	point bTireRef = backTire->getRefPoint();
-
-	point relativeBTireRef = { bTireRef.x - ref.x, bTireRef.y - ref.y };
-	point rotatedRelativeBTireRef = backTire->multiplyByMatrix(relativeBTireRef);
-	bTireRef.x = ref.x + rotatedRelativeBTireRef.x;
-	bTireRef.y = ref.y + rotatedRelativeBTireRef.y;
-	backTire->setRefPoint(bTireRef);
-
-	point fTireRef = frontTire->getRefPoint();
-
-	point relativeFTireRef = { fTireRef.x - ref.x, fTireRef.y - ref.y };
-	point rotatedRelativeFTireRef = frontTire->multiplyByMatrix(relativeFTireRef);
-	fTireRef.x = ref.x + rotatedRelativeFTireRef.x;
-	fTireRef.y = ref.y + rotatedRelativeFTireRef.y;
-	frontTire->setRefPoint(fTireRef);
-
-
-	
-	
+void Car::rotate() {
+	point baseRef = lowBody->getRefPoint();
 	lowBody->rotate();
+
+	point upBodyRef = upBody->getRefPoint();
+	point relativeUpBodyRef = { upBodyRef.x - baseRef.x, upBodyRef.y - baseRef.y };
+	point rotatedRelativeUpBodyRef = multiplyByMatrix(relativeUpBodyRef);
+	point newUpBodyRef = { baseRef.x + rotatedRelativeUpBodyRef.x, baseRef.y + rotatedRelativeUpBodyRef.y };
+	upBody->setRefPoint(newUpBodyRef);
 	upBody->rotate();
 
+	point upBody1Ref = upBody1->getRefPoint();
+	point relativeUpBody1Ref = { upBody1Ref.x - baseRef.x, upBody1Ref.y - baseRef.y };
+	point rotatedRelativeUpBody1Ref = multiplyByMatrix(relativeUpBody1Ref);
+	point newUpBody1Ref = { baseRef.x + rotatedRelativeUpBody1Ref.x, baseRef.y + rotatedRelativeUpBody1Ref.y };
+	upBody1->setRefPoint(newUpBody1Ref);
+
+	point upBody1Vert2 = upBody1->getVert2();
+	point relUpBody1Vert2 = { upBody1Vert2.x - baseRef.x, upBody1Vert2.y - baseRef.y };
+	point rotRelUpBody1Vert2 = multiplyByMatrix(relUpBody1Vert2);
+	point newUpBody1Vert2 = { baseRef.x + rotRelUpBody1Vert2.x, baseRef.y + rotRelUpBody1Vert2.y };
+
+	point upBody1Vert3 = upBody1->getVert3();
+	point relUpBody1Vert3 = { upBody1Vert3.x - baseRef.x, upBody1Vert3.y - baseRef.y };
+	point rotRelUpBody1Vert3 = multiplyByMatrix(relUpBody1Vert3);
+	point newUpBody1Vert3 = { baseRef.x + rotRelUpBody1Vert3.x, baseRef.y + rotRelUpBody1Vert3.y };
+	delete upBody1;
+	upBody1 = new triangle(pGame, newUpBody1Ref, newUpBody1Vert2, newUpBody1Vert3);
+
+	point upBody2Ref = upBody2->getRefPoint();
+	point relativeUpBody2Ref = { upBody2Ref.x - baseRef.x, upBody2Ref.y - baseRef.y };
+	point rotatedRelativeUpBody2Ref = multiplyByMatrix(relativeUpBody2Ref);
+	point newUpBody2Ref = { baseRef.x + rotatedRelativeUpBody2Ref.x, baseRef.y + rotatedRelativeUpBody2Ref.y };
+	upBody2->setRefPoint(newUpBody2Ref);
+
+	point upBody2Vert2 = upBody2->getVert2();
+	point relUpBody2Vert2 = { upBody2Vert2.x - baseRef.x, upBody2Vert2.y - baseRef.y };
+	point rotRelUpBody2Vert2 = multiplyByMatrix(relUpBody2Vert2);
+	point newUpBody2Vert2 = { baseRef.x + rotRelUpBody2Vert2.x, baseRef.y + rotRelUpBody2Vert2.y };
+
+	point upBody2Vert3 = upBody2->getVert3();
+	point relUpBody2Vert3 = { upBody2Vert3.x - baseRef.x, upBody2Vert3.y - baseRef.y };
+	point rotRelUpBody2Vert3 = multiplyByMatrix(relUpBody2Vert3);
+	point newUpBody2Vert3 = { baseRef.x + rotRelUpBody2Vert3.x, baseRef.y + rotRelUpBody2Vert3.y };
+	delete upBody2;
+	upBody2 = new triangle(pGame, newUpBody2Ref, newUpBody2Vert2, newUpBody2Vert3);
+
+	point frontTireRef = frontTire->getRefPoint();
+	point relativeFrontTireRef = { frontTireRef.x - baseRef.x, frontTireRef.y - baseRef.y };
+	point rotatedRelativeFrontTireRef = multiplyByMatrix(relativeFrontTireRef);
+	point newFrontTireRef = { baseRef.x + rotatedRelativeFrontTireRef.x, baseRef.y + rotatedRelativeFrontTireRef.y };
+	frontTire->setRefPoint(newFrontTireRef);
+
+	point backTireRef = backTire->getRefPoint();
+	point relativeBackTireRef = { backTireRef.x - baseRef.x, backTireRef.y - baseRef.y };
+	point rotatedRelativeBackTireRef = multiplyByMatrix(relativeBackTireRef);
+	point newBackTireRef = { baseRef.x + rotatedRelativeBackTireRef.x, baseRef.y + rotatedRelativeBackTireRef.y };
+	backTire->setRefPoint(newBackTireRef);
+
 	stepCount++;
-	rotateCount++;
-
-
 }
 
 void Car::flip()
@@ -406,38 +379,72 @@ void Car::flip()
 	backTire->setRefPoint(newrLcircle);
 
 	stepCount++;
-		flipCount++;
 
 }
 
 void Car::move(direction dir)
 {
-	lowBody->move(dir);
-	upBody->move(dir);
-	frontTire->move(dir);
-	backTire->move(dir);
+	switch (dir)
+	{
+	case Up:
+		upBody->move(Up);
+		upBody1->move(Up);
+		upBody2->move(Up);
+		lowBody->move(Up);
+		frontTire->move(Up);
+		backTire->move(Up);
+		break;
+	case Down:
+		upBody->move(Down);
+		upBody1->move(Down);
+		upBody2->move(Down);
+		lowBody->move(Down);
+		frontTire->move(Down);
+		backTire->move(Down);
+		break;
+	case Right:
+		upBody->move(Right);
+		upBody1->move(Right);
+		upBody2->move(Right);
+		lowBody->move(Right);
+		frontTire->move(Right);
+		backTire->move(Right);
+		break;
+	case Left:
+		upBody->move(Left);
+		upBody1->move(Left);
+		upBody2->move(Left);
+		lowBody->move(Left);
+		frontTire->move(Left);
+		backTire->move(Left);
+		break;
+
+	}
 
 	stepCount++;
-movecount++;
+
 }
 
-bool Car::check_boundries()
-{
-	return lowBody->check_boundries();
-	return upBody->check_boundries();
-	return frontTire->check_boundries();
-	return backTire->check_boundries();
-}
 
 void Car::resize_up()
 {
 	double factor = 2;
-	point bottomRef = RefPoint;
-	point topRef = { RefPoint.x, RefPoint.y - config.carShape.lowHeight / 2  * factor - config.carShape.upHeight / 2 * factor };
-	point bTireRef = { RefPoint.x - config.carShape.lowWdth / 4 * factor , RefPoint.y + config.carShape.lowHeight / 2 * factor };
-	point fTireRef = { RefPoint.x + config.carShape.lowWdth / 4 * factor , RefPoint.y + config.carShape.lowHeight / 2 * factor };
-	lowBody = new Rect(pGame, bottomRef, config.carShape.lowHeight, config.carShape.lowWdth);
-	upBody = new polygon(pGame, topRef, config.carShape.upTOPWdth, config.carShape.upBOTWdth, config.carShape.upHeight);
+	point ref = RefPoint;
+	point topRef = { ref.x, ref.y - config.carShape.lowHeight / 2 - config.carShape.upHeight / 2 };
+	point up1Ref = { topRef.x - config.carShape.upTOPWdth, topRef.y + config.carShape.upHeight / 2 };
+	point up2Ref = { topRef.x + config.carShape.upTOPWdth, topRef.y + config.carShape.upHeight / 2 };
+	point bTireRef = { ref.x - config.carShape.lowWdth / 4, ref.y + config.carShape.lowHeight / 2 };
+	point fTireRef = { ref.x + config.carShape.lowWdth / 4, ref.y + config.carShape.lowHeight / 2 };
+	point up12 = { up1Ref.x - (config.carShape.upBOTWdth - config.carShape.upTOPWdth) / 2, up1Ref.y };
+	point up22 = { up2Ref.x + (config.carShape.upBOTWdth - config.carShape.upTOPWdth) / 2, up2Ref.y };
+	point up13 = { up1Ref.x, up1Ref.y - config.carShape.upHeight };
+	point up23 = { up2Ref.x, up2Ref.y - config.carShape.upHeight };
+
+
+	lowBody = new Rect(pGame, ref, config.carShape.lowHeight, config.carShape.lowWdth);
+	upBody = new Rect(pGame, topRef, config.carShape.upHeight, config.carShape.upBOTWdth);
+	upBody1 = new triangle(pGame, up1Ref, up12, up13);
+	upBody2 = new triangle(pGame, up2Ref, up22, up23);
 	frontTire = new circle(pGame, fTireRef, config.carShape.tireRadius);
 	backTire = new circle(pGame, bTireRef, config.carShape.tireRadius);
 	lowBody->resize_up();
@@ -446,31 +453,57 @@ void Car::resize_up()
 	backTire->resize_up();
 
 	stepCount++;
-	resizeUpCount++;
 
 }
 
 void Car::resize_down()
 {
 	double factor = .5;
-	point bottomRef = RefPoint;
-	point topRef = { RefPoint.x, RefPoint.y - config.carShape.lowHeight / 2 * factor - config.carShape.upHeight / 2 * factor };
-	point bTireRef = { RefPoint.x - config.carShape.lowWdth / 4 * factor , RefPoint.y + config.carShape.lowHeight / 2 * factor };
-	point fTireRef = { RefPoint.x + config.carShape.lowWdth / 4 * factor , RefPoint.y + config.carShape.lowHeight / 2 * factor };
-	lowBody = new Rect(pGame, bottomRef, config.carShape.lowHeight, config.carShape.lowWdth);
-	upBody = new polygon(pGame, topRef, config.carShape.upTOPWdth, config.carShape.upBOTWdth, config.carShape.upHeight);
+	point ref = RefPoint;
+	point topRef = { ref.x, ref.y - config.carShape.lowHeight / 2 - config.carShape.upHeight / 2 };
+	point up1Ref = { topRef.x - config.carShape.upTOPWdth, topRef.y + config.carShape.upHeight / 2 };
+	point up2Ref = { topRef.x + config.carShape.upTOPWdth, topRef.y + config.carShape.upHeight / 2 };
+	point bTireRef = { ref.x - config.carShape.lowWdth / 4, ref.y + config.carShape.lowHeight / 2 };
+	point fTireRef = { ref.x + config.carShape.lowWdth / 4, ref.y + config.carShape.lowHeight / 2 };
+	point up12 = { up1Ref.x - (config.carShape.upBOTWdth - config.carShape.upTOPWdth) / 2, up1Ref.y };
+	point up22 = { up2Ref.x + (config.carShape.upBOTWdth - config.carShape.upTOPWdth) / 2, up2Ref.y };
+	point up13 = { up1Ref.x, up1Ref.y - config.carShape.upHeight };
+	point up23 = { up2Ref.x, up2Ref.y - config.carShape.upHeight };
+
+
+	lowBody = new Rect(pGame, ref, config.carShape.lowHeight, config.carShape.lowWdth);
+	upBody = new Rect(pGame, topRef, config.carShape.upHeight, config.carShape.upBOTWdth);
+	upBody1 = new triangle(pGame, up1Ref, up12, up13);
+	upBody2 = new triangle(pGame, up2Ref, up22, up23);
 	frontTire = new circle(pGame, fTireRef, config.carShape.tireRadius);
 	backTire = new circle(pGame, bTireRef, config.carShape.tireRadius);
-	lowBody->resize_down();
-	upBody->resize_down();
-	frontTire->resize_down();
-	backTire->resize_down();
-
 	stepCount++;
-	resizeDownCount++;
 
-	
+
 }
+
+bool Car::matches(const shape* target) const {
+	const Car* targetCar = dynamic_cast<const Car*>(target);
+	if (targetCar) {
+		bool match = lowBody->matches(targetCar->lowBody)
+			&& upBody->matches(targetCar->upBody)
+			&& frontTire->matches(targetCar->frontTire)
+			&& backTire->matches(targetCar->backTire);
+		if (match) {
+			pGame->incScore(2);
+		}
+		else {
+			pGame->decScore(1);
+			delete targetCar;
+			targetCar = nullptr;
+		}
+		return match;
+	}
+	return false;
+}
+
+
+
 
 
 ///Boat
@@ -480,77 +513,106 @@ void Car::resize_down()
 Boat::Boat(game* r_pGame, point ref) :shape(r_pGame, ref)
 {
 	point hullRef = ref;
+	point hull1Ref = { ref.x - config.boatShape.RhullWdth / 2, ref.y - config.boatShape.hullHeight / 2 };
+	point hull2Ref = { ref.x + config.boatShape.RhullWdth / 2, ref.y - config.boatShape.hullHeight / 2 };
 	point sailRef = { ref.x - config.boatShape.bHullWdth / 2 - config.boatShape.tHullWdth / 10,ref.y - config.boatShape.hullHeight / 2 };
 	point mastRef = { sailRef.x + config.boatShape.sailHeight / 2.5, ref.y - config.boatShape.hullHeight / 2 };
-	point sail2 = { sailRef.x + config.boatShape.sailWdth, sailRef.y};
-	point sail3 = { sailRef.x + config.boatShape.sailHeight/2.5, sailRef.y - config.boatShape.hullHeight };
-	hull = new polygon(pGame, hullRef, config.boatShape.tHullWdth, config.boatShape.bHullWdth, config.boatShape.hullHeight);
+	point sail2 = { sailRef.x + config.boatShape.sailWdth, sailRef.y };
+	point sail3 = { sailRef.x + config.boatShape.sailHeight / 2.5, sailRef.y - config.boatShape.hullHeight };
+	point hull12 = { hull1Ref.x - config.boatShape.thullWdthT, hull1Ref.y };
+	point hull22 = { hull2Ref.x + config.boatShape.thullWdthT, hull2Ref.y };
+	point hull13 = { hull1Ref.x, hull1Ref.y + config.boatShape.hullHeight };
+	point hull23 = { hull2Ref.x, hull2Ref.y + config.boatShape.hullHeight };
+
+
+	hull = new Rect(pGame, hullRef, config.boatShape.hullHeight, config.boatShape.RhullWdth);
 	sail = new triangle(pGame, sailRef, sail2, sail3);
-	mast = new line(pGame, mastRef, { mastRef.x, mastRef.y - config.boatShape.mastHeight});
+	mast = new line(pGame, mastRef, { mastRef.x, mastRef.y - config.boatShape.mastHeight });
+	hull1 = new triangle(pGame, hull1Ref, hull12, hull13);
+	hull2 = new triangle(pGame, hull2Ref, hull22, hull23);
 };
-
-void Boat::setFillColor(color c)
-{
-	fillColor = c;
-}
-;
-
-
-void Boat::save(ofstream& OutFile) const
-{
-	OutFile << "BOAT " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
-		" " << resizeDownCount << " " << movecount << endl;
-	hull->save(OutFile);
-	sail->save(OutFile);
-	mast->save(OutFile);
-}
-
 
 void Boat::draw() const
 {
 	hull->draw();
+	hull1->draw();
+	hull2->draw();
 	sail->draw();
 	mast->draw();
 }
 
-void Boat::rotate()
-{
-	point hullRef = hull->getRefPoint();
+void Boat::rotate() {
+	point baseRef = hull->getRefPoint();
 	hull->rotate();
 
+	point hull1Ref = hull1->getRefPoint();
+	point relativeHull1Ref = { hull1Ref.x - baseRef.x, hull1Ref.y - baseRef.y };
+	point rotatedRelativeHull1Ref = multiplyByMatrix(relativeHull1Ref);
+	point newHull1Ref = { baseRef.x + rotatedRelativeHull1Ref.x, baseRef.y + rotatedRelativeHull1Ref.y };
+	hull1->setRefPoint(newHull1Ref);
+
+	point hull1Vert2 = hull1->getVert2();
+	point relVert2 = { hull1Vert2.x - baseRef.x, hull1Vert2.y - baseRef.y };
+	point rotRelVert2 = multiplyByMatrix(relVert2);
+	point newHull1Vert2 = { baseRef.x + rotRelVert2.x, baseRef.y + rotRelVert2.y };
+
+	point hull1Vert3 = hull1->getVert3();
+	point relVert3 = { hull1Vert3.x - baseRef.x, hull1Vert3.y - baseRef.y };
+	point rotRelVert3 = multiplyByMatrix(relVert3);
+	point newHull1Vert3 = { baseRef.x + rotRelVert3.x, baseRef.y + rotRelVert3.y };
+	delete hull1;
+	hull1 = new triangle(pGame, newHull1Ref, newHull1Vert2, newHull1Vert3);
+
+	point hull2Ref = hull2->getRefPoint();
+	point relativeHull2Ref = { hull2Ref.x - baseRef.x, hull2Ref.y - baseRef.y };
+	point rotatedRelativeHull2Ref = multiplyByMatrix(relativeHull2Ref);
+	point newHull2Ref = { baseRef.x + rotatedRelativeHull2Ref.x, baseRef.y + rotatedRelativeHull2Ref.y };
+	hull2->setRefPoint(newHull2Ref);
+
+	point hull2Vert2 = hull2->getVert2();
+	point relHull2Vert2 = { hull2Vert2.x - baseRef.x, hull2Vert2.y - baseRef.y };
+	point rotRelHull2Vert2 = multiplyByMatrix(relHull2Vert2);
+	point newHull2Vert2 = { baseRef.x + rotRelHull2Vert2.x, baseRef.y + rotRelHull2Vert2.y };
+
+	point hull2Vert3 = hull2->getVert3();
+	point relHull2Vert3 = { hull2Vert3.x - baseRef.x, hull2Vert3.y - baseRef.y };
+	point rotRelHull2Vert3 = multiplyByMatrix(relHull2Vert3);
+	point newHull2Vert3 = { baseRef.x + rotRelHull2Vert3.x, baseRef.y + rotRelHull2Vert3.y };
+	delete hull2;
+	hull2 = new triangle(pGame, newHull2Ref, newHull2Vert2, newHull2Vert3);
+
 	point sailRef = sail->getRefPoint();
-	point relativeSailRef = { sailRef.x - hullRef.x, sailRef.y - hullRef.y };
+	point relativeSailRef = { sailRef.x - baseRef.x, sailRef.y - baseRef.y };
 	point rotatedRelativeSailRef = multiplyByMatrix(relativeSailRef);
-	point newSailRef = { hullRef.x + rotatedRelativeSailRef.x, hullRef.y + rotatedRelativeSailRef.y };
+	point newSailRef = { baseRef.x + rotatedRelativeSailRef.x, baseRef.y + rotatedRelativeSailRef.y };
 	sail->setRefPoint(newSailRef);
 
-	point sail2 = sail->getVert2();
-	point relSailVert2 = { sail2.x - hullRef.x, sail2.y - hullRef.y };
+	point sailVert2 = sail->getVert2();
+	point relSailVert2 = { sailVert2.x - baseRef.x, sailVert2.y - baseRef.y };
 	point rotRelSailVert2 = multiplyByMatrix(relSailVert2);
-	point newSail2 = { hullRef.x + rotRelSailVert2.x, hullRef.y + rotRelSailVert2.y };
+	point newSailVert2 = { baseRef.x + rotRelSailVert2.x, baseRef.y + rotRelSailVert2.y };
 
-	point sail3 = sail->getVert3();
-	point relSailVert3 = { sail3.x - hullRef.x, sail3.y - hullRef.y };
+	point sailVert3 = sail->getVert3();
+	point relSailVert3 = { sailVert3.x - baseRef.x, sailVert3.y - baseRef.y };
 	point rotRelSailVert3 = multiplyByMatrix(relSailVert3);
-	point newSail3 = { hullRef.x + rotRelSailVert3.x, hullRef.y + rotRelSailVert3.y };
-
-	sail = new triangle(pGame, newSailRef, newSail2, newSail3);
+	point newSailVert3 = { baseRef.x + rotRelSailVert3.x, baseRef.y + rotRelSailVert3.y };
+	delete sail;
+	sail = new triangle(pGame, newSailRef, newSailVert2, newSailVert3);
 
 	point mastRef = mast->getRefPoint();
-	point relativeMastRef = { mastRef.x - hullRef.x, mastRef.y - hullRef.y };
+	point relativeMastRef = { mastRef.x - baseRef.x, mastRef.y - baseRef.y };
 	point rotatedRelativeMastRef = multiplyByMatrix(relativeMastRef);
-	point newMastRef = { hullRef.x + rotatedRelativeMastRef.x, hullRef.y + rotatedRelativeMastRef.y };
+	point newMastRef = { baseRef.x + rotatedRelativeMastRef.x, baseRef.y + rotatedRelativeMastRef.y };
 	mast->setRefPoint(newMastRef);
 
-	point mast2 = mast->getPoint2();
-	point relMastVert2 = { mast2.x - hullRef.x, mast2.y - hullRef.y };
-	point rotRelMastVert2 = multiplyByMatrix(relMastVert2);
-	point newMast2 = { hullRef.x + rotRelMastVert2.x, hullRef.y + rotRelMastVert2.y };
-	mast = new line(pGame, newMastRef, newMast2);
+	point mastEnd = mast->getPoint2();
+	point relMastEnd = { mastEnd.x - baseRef.x, mastEnd.y - baseRef.y };
+	point rotRelMastEnd = multiplyByMatrix(relMastEnd);
+	point newMastEnd = { baseRef.x + rotRelMastEnd.x, baseRef.y + rotRelMastEnd.y };
+	delete mast;
+	mast = new line(pGame, newMastRef, newMastEnd);
 
 	stepCount++;
-	rotateCount++;
-
 }
 
 void Boat::flip()
@@ -559,7 +621,7 @@ void Boat::flip()
 	point sailref = sail->getRefPoint();
 	point mastref = mast->getRefPoint();
 	point sail3 = sail->getVert3();
-	point newbaseref = { baseref.x,sail3.y};
+	point newbaseref = { baseref.x,sail3.y };
 	hull->flip();
 	point newsailref = { sailref.x,sailref.y };
 	point newmusref = { mastref.x,sailref.y };
@@ -570,90 +632,110 @@ void Boat::flip()
 	sail->setvert3(vert33);
 
 	stepCount++;
-	flipCount++;
+
 }
 
 void Boat::move(direction dir)
 {
-
-	switch (dir)
-	{
-	case right:
-		RefPoint.x += config.gridSpacing;
+	switch (dir) {
+	case Up:
+		hull->move(Up);
+		hull1->move(Up);
+		hull2->move(Up);
+		sail->move(Up);
+		mast->move(Up);
 		break;
-	case up:
-		RefPoint.y += config.gridSpacing;
+	case Down:
+		hull->move(Down);
+		hull1->move(Down);
+		hull2->move(Down);
+		sail->move(Down);
+		mast->move(Down);
 		break;
-	case left:
-		RefPoint.x -= config.gridSpacing;
+	case Right:
+		hull->move(Right);
+		hull1->move(Right);
+		hull2->move(Right);
+		sail->move(Right);
+		mast->move(Right);
 		break;
-	case down:
-		RefPoint.y -= config.gridSpacing;
+	case Left:
+		hull->move(Left);
+		hull1->move(Left);
+		hull2->move(Left);
+		sail->move(Left);
+		mast->move(Left);
 		break;
 	}
-
-	point sailRef = { RefPoint.x - config.boatShape.bHullWdth / 2 - config.boatShape.tHullWdth / 10,RefPoint.y - config.boatShape.hullHeight / 2 };
-	point sail2 = { sailRef.x + config.boatShape.sailWdth, sailRef.y };
-	point sail3 = { sailRef.x + config.boatShape.sailHeight / 2.5, sailRef.y - config.boatShape.hullHeight };
-	sail = new triangle(pGame, sailRef, sail2, sail3);
-
-
-	hull->move(dir);
-	
-	mast->move(dir);
-
-
 	stepCount++;
-movecount++;
 }
 
-
-bool Boat::check_boundries()
-{
-	return sail->check_boundries();
-	return hull->check_boundries();
-	return mast->check_boundries();
-}
 
 
 void Boat::resize_up()
 {
 	double factor = 2;
-	point hullRef = RefPoint;
-	point sailRef = { RefPoint.x - config.boatShape.bHullWdth / 2 * factor - config.boatShape.tHullWdth / 10 * factor,RefPoint.y - config.boatShape.hullHeight / 2 * factor };
-	point mastRef = { sailRef.x + config.boatShape.sailHeight / 2.5 * factor, RefPoint.y - config.boatShape.hullHeight / 2 * factor * factor };
-	point sail2 = { sailRef.x + config.boatShape.sailWdth * factor, sailRef.y };
-	point sail3 = { sailRef.x + config.boatShape.sailHeight / 2.5 * factor, sailRef.y - config.boatShape.hullHeight * factor };
-	hull = new polygon(pGame, hullRef, config.boatShape.tHullWdth, config.boatShape.bHullWdth, config.boatShape.hullHeight);
+	point ref = RefPoint;
+	point hull1Ref = { ref.x - config.boatShape.RhullWdth / 2, ref.y - config.boatShape.hullHeight };
+	point hull2Ref = { ref.x + config.boatShape.RhullWdth / 2, ref.y - config.boatShape.hullHeight };
+	point sailRef = { ref.x - config.boatShape.bHullWdth / 2 - config.boatShape.tHullWdth / 10,ref.y - config.boatShape.hullHeight / 2 };
+	point mastRef = { sailRef.x + config.boatShape.sailHeight / 2.5, ref.y - config.boatShape.hullHeight / 2 };
+	point sail2 = { sailRef.x + config.boatShape.sailWdth, sailRef.y };
+	point sail3 = { sailRef.x + config.boatShape.sailHeight / 2.5, sailRef.y - config.boatShape.hullHeight };
+	point hull12 = { hull1Ref.x - config.boatShape.thullWdthT, hull1Ref.y };
+	point hull22 = { hull2Ref.x - config.boatShape.thullWdthT, hull2Ref.y };
+	point hull13 = { hull1Ref.x, hull1Ref.y + config.boatShape.hullHeight };
+	point hull23 = { hull2Ref.x, hull2Ref.y + config.boatShape.hullHeight };
+
+
+	hull = new Rect(pGame, ref, config.boatShape.hullHeight, config.boatShape.RhullWdth);
 	sail = new triangle(pGame, sailRef, sail2, sail3);
 	mast = new line(pGame, mastRef, { mastRef.x, mastRef.y - config.boatShape.mastHeight });
+	hull1 = new triangle(pGame, hull1Ref, hull12, hull13);
+	hull2 = new triangle(pGame, hull2Ref, hull22, hull23);
 	hull->resize_up();
 
 
 	stepCount++;
-resizeUpCount++;
-	
+
+
 }
 
 void Boat::resize_down()
 {
 	double factor = .5;
-	point hullRef = RefPoint;
-	point sailRef = { RefPoint.x - config.boatShape.bHullWdth / 2 * factor - config.boatShape.tHullWdth / 10 * factor,RefPoint.y - config.boatShape.hullHeight / 2 * factor };
-	point mastRef = { sailRef.x + config.boatShape.sailHeight / 2.5 * factor, RefPoint.y + config.boatShape.hullHeight/2  *factor  };
-	point sail2 = { sailRef.x + config.boatShape.sailWdth * factor, sailRef.y };
-	point sail3 = { sailRef.x + config.boatShape.sailHeight / 2.5 * factor, sailRef.y - config.boatShape.hullHeight * factor };
-	hull = new polygon(pGame, hullRef, config.boatShape.tHullWdth, config.boatShape.bHullWdth, config.boatShape.hullHeight);
+	point ref = RefPoint;
+	point hull1Ref = { ref.x - config.boatShape.RhullWdth / 2, ref.y - config.boatShape.hullHeight };
+	point hull2Ref = { ref.x + config.boatShape.RhullWdth / 2, ref.y - config.boatShape.hullHeight };
+	point sailRef = { ref.x - config.boatShape.bHullWdth / 2 - config.boatShape.tHullWdth / 10,ref.y - config.boatShape.hullHeight / 2 };
+	point mastRef = { sailRef.x + config.boatShape.sailHeight / 2.5, ref.y - config.boatShape.hullHeight / 2 };
+	point sail2 = { sailRef.x + config.boatShape.sailWdth, sailRef.y };
+	point sail3 = { sailRef.x + config.boatShape.sailHeight / 2.5, sailRef.y - config.boatShape.hullHeight };
+	point hull12 = { hull1Ref.x - config.boatShape.thullWdthT, hull1Ref.y };
+	point hull22 = { hull2Ref.x - config.boatShape.thullWdthT, hull2Ref.y };
+	point hull13 = { hull1Ref.x, hull1Ref.y + config.boatShape.hullHeight };
+	point hull23 = { hull2Ref.x, hull2Ref.y + config.boatShape.hullHeight };
+
+
+	hull = new Rect(pGame, ref, config.boatShape.hullHeight, config.boatShape.RhullWdth);
 	sail = new triangle(pGame, sailRef, sail2, sail3);
 	mast = new line(pGame, mastRef, { mastRef.x, mastRef.y - config.boatShape.mastHeight });
+	hull1 = new triangle(pGame, hull1Ref, hull12, hull13);
+	hull2 = new triangle(pGame, hull2Ref, hull22, hull23);
 	hull->resize_down();
 
 
 	stepCount++;
-	resizeDownCount++;
 
 }
 
+bool Boat::matches(const shape* target) const {
+	const Boat* targetBoat = dynamic_cast<const Boat*>(target);
+	if (targetBoat) {
+		return hull->matches(targetBoat->hull) && hull1->matches(targetBoat->hull1) && hull2->matches(targetBoat->hull2) && sail->matches(targetBoat->sail) && mast->matches(targetBoat->mast);
+	}
+	return false;
+}
 
 
 //PLANE 
@@ -662,8 +744,8 @@ void Boat::resize_down()
 Plane::Plane(game* r_pGame, point ref) :shape(r_pGame, ref)
 {
 	point fuselageRef = ref;
-	point noseRef = {ref.x + config.planeShape.fuselageWdth/2,ref.y - config.planeShape.fuselageHeight/2};
-	point tailRef = {ref.x - config.planeShape.fuselageWdth/2, ref.y - config.planeShape.fuselageHeight/2};
+	point noseRef = { ref.x + config.planeShape.fuselageWdth / 2,ref.y - config.planeShape.fuselageHeight / 2 };
+	point tailRef = { ref.x - config.planeShape.fuselageWdth / 2, ref.y - config.planeShape.fuselageHeight / 2 };
 	point upWingRef = { ref.x + config.planeShape.fuselageWdth / 10, ref.y - config.planeShape.fuselageHeight / 2 };
 	point lowWingRef = { ref.x + config.planeShape.fuselageWdth / 10, ref.y + config.planeShape.fuselageHeight / 2 };
 	point upStabRef = { ref.x - config.planeShape.fuselageWdth / 2, ref.y - config.planeShape.fuselageHeight / 2 };
@@ -671,44 +753,23 @@ Plane::Plane(game* r_pGame, point ref) :shape(r_pGame, ref)
 	point nose2 = { noseRef.x,noseRef.y + config.planeShape.noseHeight };
 	point nose3 = { noseRef.x + config.planeShape.noseWdth, noseRef.y + config.planeShape.noseHeight / 2 };
 	point tail2 = { tailRef.x,tailRef.y + config.planeShape.tailHeight };
-	point tail3 = {tailRef.x - config.planeShape.tailWdth, tailRef.y + config.planeShape.tailHeight/2};
+	point tail3 = { tailRef.x - config.planeShape.tailWdth, tailRef.y + config.planeShape.tailHeight / 2 };
 	point upWing2 = { upWingRef.x + config.planeShape.wingWidth, upWingRef.y };
-	point upWing3 = {upWingRef.x - config.planeShape.wingSweep,upWingRef.y - config.planeShape.wingHeight};
-	point lowWing2 = {lowWingRef.x + config.planeShape.wingWidth, lowWingRef.y};
+	point upWing3 = { upWingRef.x - config.planeShape.wingSweep,upWingRef.y - config.planeShape.wingHeight };
+	point lowWing2 = { lowWingRef.x + config.planeShape.wingWidth, lowWingRef.y };
 	point lowWing3 = { lowWingRef.x - config.planeShape.wingSweep, lowWingRef.y + config.planeShape.wingHeight };
-	point upStab2 = {upStabRef.x - config.planeShape.stabWdth, upStabRef.y + config.planeShape.fuselageWdth/4};
-	point upstab3 = {upStabRef.x - config.planeShape.stabWdth - config.planeShape.stabSweep, upStabRef.y - config.planeShape.stabHeight};
-	point lowStab2 = { upStabRef.x - config.planeShape.stabWdth, upStabRef.y};
-	point lowStab3 = {lowStabRef.x - config.planeShape.stabWdth - config.planeShape.stabSweep, lowStabRef.y + config.planeShape.stabHeight };
+	point upStab2 = { upStabRef.x - config.planeShape.stabWdth, upStabRef.y + config.planeShape.fuselageWdth / 4 };
+	point upstab3 = { upStabRef.x - config.planeShape.stabWdth - config.planeShape.stabSweep, upStabRef.y - config.planeShape.stabHeight };
+	point lowStab2 = { upStabRef.x - config.planeShape.stabWdth, upStabRef.y };
+	point lowStab3 = { lowStabRef.x - config.planeShape.stabWdth - config.planeShape.stabSweep, lowStabRef.y + config.planeShape.stabHeight };
 	fuselage = new Rect(pGame, fuselageRef, config.planeShape.fuselageHeight, config.planeShape.fuselageWdth);
 	nose = new triangle(pGame, noseRef, nose2, nose3);
-	tail = new triangle(pGame, tailRef, tail2, tail3 );
+	tail = new triangle(pGame, tailRef, tail2, tail3);
 	upWing = new triangle(pGame, upWingRef, upWing2, upWing3);
 	bottomWing = new triangle(pGame, lowWingRef, lowWing2, lowWing3);
 	upStab = new triangle(pGame, upStabRef, upStab2, upstab3);
 	lowStab = new triangle(pGame, lowStabRef, lowStab2, lowStab3);
 }
-
-void Plane::setFillColor(color c)
-{
-	fillColor = c;
-}
-
-
-void Plane::save(ofstream& OutFile) const
-{
-	OutFile << "PLANE  " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
-		" " << resizeDownCount << " " << movecount << endl;
-	fuselage->save(OutFile);
-	nose->save(OutFile);
-	tail->save(OutFile);
-	upWing->save(OutFile);
-	bottomWing->save(OutFile);
-	upStab->save(OutFile);
-	lowStab->save(OutFile);
-}
-
-
 
 void Plane::draw() const
 {
@@ -743,6 +804,7 @@ void Plane::rotate()
 	point rotRelNoseVert3 = multiplyByMatrix(relNoseVert3);
 	point newNose3 = { ref.x + rotRelNoseVert3.x, ref.y + rotRelNoseVert3.y };
 
+	delete nose;
 	nose = new triangle(pGame, newNoseRef, newNose2, newNose3);
 
 	// Rotate tail
@@ -761,7 +823,7 @@ void Plane::rotate()
 	point relTailVert3 = { tail3.x - ref.x, tail3.y - ref.y };
 	point rotRelTailVert3 = multiplyByMatrix(relTailVert3);
 	point newTail3 = { ref.x + rotRelTailVert3.x, ref.y + rotRelTailVert3.y };
-
+	delete tail;
 	tail = new triangle(pGame, newTailRef, newTail2, newTail3);
 
 	// Rotate upWing
@@ -779,7 +841,7 @@ void Plane::rotate()
 	point relUpWingVert3 = { upWing3.x - ref.x, upWing3.y - ref.y };
 	point rotRelUpWingVert3 = multiplyByMatrix(relUpWingVert3);
 	point newUpWing3 = { ref.x + rotRelUpWingVert3.x, ref.y + rotRelUpWingVert3.y };
-
+	delete upWing;
 	upWing = new triangle(pGame, newUpWingRef, newUpWing2, newUpWing3);
 
 	// Rotate bottomWing
@@ -798,7 +860,7 @@ void Plane::rotate()
 	point relBottomWingVert3 = { bottomWing3.x - ref.x, bottomWing3.y - ref.y };
 	point rotRelBottomWingVert3 = multiplyByMatrix(relBottomWingVert3);
 	point newBottomWing3 = { ref.x + rotRelBottomWingVert3.x, ref.y + rotRelBottomWingVert3.y };
-
+	delete bottomWing;
 	bottomWing = new triangle(pGame, newBottomWingRef, newBottomWing2, newBottomWing3);
 
 	// Rotate upStab
@@ -817,7 +879,7 @@ void Plane::rotate()
 	point relUpStabVert3 = { upStab3.x - ref.x, upStab3.y - ref.y };
 	point rotRelUpStabVert3 = multiplyByMatrix(relUpStabVert3);
 	point newUpStab3 = { ref.x + rotRelUpStabVert3.x, ref.y + rotRelUpStabVert3.y };
-
+	delete upStab;
 	upStab = new triangle(pGame, newUpStabRef, newUpStab2, newUpStab3);
 
 	// Rotate lowStab
@@ -835,11 +897,10 @@ void Plane::rotate()
 	point relLowStabVert3 = { lowStab3.x - ref.x, lowStab3.y - ref.y };
 	point rotRelLowStabVert3 = multiplyByMatrix(relLowStabVert3);
 	point newLowStab3 = { ref.x + rotRelLowStabVert3.x, ref.y + rotRelLowStabVert3.y };
-
+	delete lowStab;
 	lowStab = new triangle(pGame, newLowStabRef, newLowStab2, newLowStab3);
 
 	stepCount++;
-	rotateCount++;
 
 }
 
@@ -853,7 +914,7 @@ void Plane::resize_up()
 	point upWingRef = { RefPoint.x + config.planeShape.fuselageWdth / 10 * factor, RefPoint.y - config.planeShape.fuselageHeight / 2 * factor };
 	point lowWingRef = { RefPoint.x + config.planeShape.fuselageWdth / 10 * factor, RefPoint.y + config.planeShape.fuselageHeight / 2 * factor };
 	point upStabRef = { RefPoint.x - config.planeShape.fuselageWdth / 2 * factor, RefPoint.y - config.planeShape.fuselageHeight / 2 * factor };
-	point lowStabRef = { RefPoint.x - config.planeShape.fuselageWdth / 2 * factor, RefPoint.y + config.planeShape.fuselageHeight/4  };
+	point lowStabRef = { RefPoint.x - config.planeShape.fuselageWdth / 2 * factor, RefPoint.y + config.planeShape.fuselageHeight / 4 };
 	point nose2 = { noseRef.x,noseRef.y + config.planeShape.noseHeight * factor };
 	point nose3 = { noseRef.x + config.planeShape.noseWdth * factor, noseRef.y + config.planeShape.noseHeight / 2 * factor };
 	point tail2 = { tailRef.x,tailRef.y + config.planeShape.tailHeight };
@@ -864,8 +925,8 @@ void Plane::resize_up()
 	point lowWing3 = { lowWingRef.x - config.planeShape.wingSweep * factor, lowWingRef.y + config.planeShape.wingHeight * factor };
 	point upStab2 = { upStabRef.x - config.planeShape.stabWdth * factor, upStabRef.y + config.planeShape.fuselageWdth / 4 * factor };
 	point upstab3 = { upStabRef.x - config.planeShape.stabWdth * factor - config.planeShape.stabSweep * factor, upStabRef.y - config.planeShape.stabHeight * factor };
-	point lowStab2 = { upStabRef.x - config.planeShape.stabWdth * factor, upStabRef.y  };
-	point lowStab3 = { lowStabRef.x - config.planeShape.stabWdth * factor - config.planeShape.stabSweep * factor, lowStabRef.y + config.planeShape.stabHeight* factor };
+	point lowStab2 = { upStabRef.x - config.planeShape.stabWdth * factor, upStabRef.y };
+	point lowStab3 = { lowStabRef.x - config.planeShape.stabWdth * factor - config.planeShape.stabSweep * factor, lowStabRef.y + config.planeShape.stabHeight * factor };
 	fuselage = new Rect(pGame, fuselageRef, config.planeShape.fuselageHeight, config.planeShape.fuselageWdth);
 	nose = new triangle(pGame, noseRef, nose2, nose3);
 	tail = new triangle(pGame, tailRef, tail2, tail3);
@@ -883,7 +944,7 @@ void Plane::resize_up()
 	lowStab->resize_up();
 
 	stepCount++;
-resizeUpCount++;
+
 }
 
 void Plane::resize_down()
@@ -920,9 +981,8 @@ void Plane::resize_down()
 	fuselage->resize_down();
 
 	stepCount++;
-	resizeDownCount++;
 
-	}
+}
 
 void Plane::flip()
 {//fuselage and the two wings//
@@ -970,72 +1030,67 @@ void Plane::flip()
 	lowStab->setvert3(newlowsta3);
 
 	stepCount++;
-	flipCount++;
+
 
 }
 
 void Plane::move(direction dir)
 {
-	switch (dir)
-	{
-	case right:
-		RefPoint.x += config.gridSpacing;
+	switch (dir) {
+	case Up:
+		fuselage->move(Up);
+		nose->move(Up);
+		tail->move(Up);
+		upWing->move(Up);
+		bottomWing->move(Up);
+		upStab->move(Up);
+		lowStab->move(Up);
 		break;
-	case up:
-		RefPoint.y += config.gridSpacing;
+	case Down:
+		fuselage->move(Down);
+		nose->move(Down);
+		tail->move(Down);
+		upWing->move(Down);
+		bottomWing->move(Down);
+		upStab->move(Down);
+		lowStab->move(Down);
 		break;
-	case left:
-		RefPoint.x -= config.gridSpacing;
+	case Right:
+		fuselage->move(Right);
+		nose->move(Right);
+		tail->move(Right);
+		upWing->move(Right);
+		bottomWing->move(Right);
+		upStab->move(Right);
+		lowStab->move(Right);
 		break;
-	case down:
-		RefPoint.y -= config.gridSpacing;
+	case Left:
+		fuselage->move(Left);
+		nose->move(Left);
+		tail->move(Left);
+		upWing->move(Left);
+		bottomWing->move(Left);
+		upStab->move(Left);
+		lowStab->move(Left);
 		break;
 	}
-
-	point noseRef = { RefPoint.x + config.planeShape.fuselageWdth / 2,RefPoint.y - config.planeShape.fuselageHeight / 2 };
-	point tailRef = { RefPoint.x - config.planeShape.fuselageWdth / 2, RefPoint.y - config.planeShape.fuselageHeight / 2 };
-	point upWingRef = { RefPoint.x + config.planeShape.fuselageWdth / 10, RefPoint.y - config.planeShape.fuselageHeight / 2 };
-	point lowWingRef = { RefPoint.x + config.planeShape.fuselageWdth / 10, RefPoint.y + config.planeShape.fuselageHeight / 2 };
-	point upStabRef = { RefPoint.x - config.planeShape.fuselageWdth / 2, RefPoint.y - config.planeShape.fuselageHeight / 2 };
-	point lowStabRef = { RefPoint.x - config.planeShape.fuselageWdth / 2, RefPoint.y + config.planeShape.fuselageHeight / 2 };
-	point nose2 = { noseRef.x,noseRef.y + config.planeShape.noseHeight };
-	point nose3 = { noseRef.x + config.planeShape.noseWdth, noseRef.y + config.planeShape.noseHeight / 2 };
-	point tail2 = { tailRef.x,tailRef.y + config.planeShape.tailHeight };
-	point tail3 = { tailRef.x - config.planeShape.tailWdth, tailRef.y + config.planeShape.tailHeight / 2 };
-	point upWing2 = { upWingRef.x + config.planeShape.wingWidth, upWingRef.y };
-	point upWing3 = { upWingRef.x - config.planeShape.wingSweep,upWingRef.y - config.planeShape.wingHeight };
-	point lowWing2 = { lowWingRef.x + config.planeShape.wingWidth, lowWingRef.y };
-	point lowWing3 = { lowWingRef.x - config.planeShape.wingSweep, lowWingRef.y + config.planeShape.wingHeight };
-	point upStab2 = { upStabRef.x - config.planeShape.stabWdth, upStabRef.y + config.planeShape.fuselageWdth / 4 };
-	point upstab3 = { upStabRef.x - config.planeShape.stabWdth - config.planeShape.stabSweep, upStabRef.y - config.planeShape.stabHeight };
-	point lowStab2 = { upStabRef.x - config.planeShape.stabWdth, upStabRef.y };
-	point lowStab3 = { lowStabRef.x - config.planeShape.stabWdth - config.planeShape.stabSweep, lowStabRef.y + config.planeShape.stabHeight };
-	nose = new triangle(pGame, noseRef, nose2, nose3);
-	tail = new triangle(pGame, tailRef, tail2, tail3);
-	upWing = new triangle(pGame, upWingRef, upWing2, upWing3);
-	bottomWing = new triangle(pGame, lowWingRef, lowWing2, lowWing3);
-	upStab = new triangle(pGame, upStabRef, upStab2, upstab3);
-	lowStab = new triangle(pGame, lowStabRef, lowStab2, lowStab3);
-
-
-	 fuselage->move(dir);
-
-
-	 stepCount++;
-movecount++;
+	stepCount++;
 }
 
-bool Plane::check_boundries()
-{
-	 return nose->check_boundries();
-	 return tail->check_boundries();
-	 return upWing->check_boundries();
-	 return bottomWing->check_boundries();
-	 return upStab->check_boundries();
-	 return lowStab->check_boundries();
-	 return fuselage->check_boundries();
-}
+bool Plane::matches(const shape* target) const {
+	const Plane* targetPlane = dynamic_cast<const Plane*>(target);
+	if (targetPlane) {
+		return fuselage->matches(targetPlane->fuselage)
+			&& nose->matches(targetPlane->nose)
+			&& tail->matches(targetPlane->tail)
+			&& upWing->matches(targetPlane->upWing)
+			&& bottomWing->matches(targetPlane->bottomWing)
+			&& upStab->matches(targetPlane->upStab)
+			&& lowStab->matches(targetPlane->lowStab);
 
+	}
+	return false;
+}
 
 //ARROW
 
@@ -1048,21 +1103,6 @@ Arrow::Arrow(game* r_pGame, point ref) :shape(r_pGame, ref)
 	point head3 = { headRef.x + config.arrowShape.headWdth, headRef.y + config.arrowShape.headHeight / 2 };
 	head = new triangle(pGame, headRef, head2, head3);
 };
-
-void Arrow::setFillColor(color c)
-{
-	fillColor = c;
-}
-;
-
-void Arrow::save(ofstream& OutFile) const
-{
-	OutFile << "ARROW " << RefPoint.x << " " << RefPoint.y << " " << rotateCount << " " << flipCount << " " << resizeUpCount <<
-		" " << resizeDownCount << " " << movecount << endl;
-	shaft->save(OutFile);
-	head->save(OutFile);
-}
-
 
 void Arrow::draw() const
 {
@@ -1091,12 +1131,11 @@ void Arrow::rotate()
 	point relHeadVert3 = { head3.x - shaftref.x, head3.y - shaftref.y };
 	point rotRelHeadVert3 = multiplyByMatrix(relHeadVert3);
 	point newHead3 = { shaftref.x + rotRelHeadVert3.x, shaftref.y + rotRelHeadVert3.y };
-
+	delete head;
 	head = new triangle(pGame, newHeadRef, newHead2, newHead3);
 
 
 	stepCount++;
-	rotateCount++;
 
 
 }
@@ -1110,12 +1149,12 @@ void Arrow::resize_up()
 	point head2 = { headRef.x, headRef.y + config.arrowShape.headHeight * factor };
 	point head3 = { headRef.x + config.arrowShape.headWdth * factor, headRef.y + config.arrowShape.headHeight / 2 * factor };
 	head = new triangle(pGame, headRef, head2, head3);
-	
+
 	shaft->resize_up();
 	head->resize_up();
 
 	stepCount++;
-resizeUpCount++;
+
 }
 
 void Arrow::resize_down()
@@ -1131,9 +1170,8 @@ void Arrow::resize_down()
 	shaft->resize_down();
 
 	stepCount++;
-	resizeDownCount++;
 
-	
+
 }
 
 void Arrow::flip()
@@ -1142,40 +1180,43 @@ void Arrow::flip()
 	head->flip();
 
 	stepCount++;
-	flipCount++;
+
 }
 
 void Arrow::move(direction dir)
 {
 	switch (dir)
 	{
-	case right:
-		RefPoint.x += config.gridSpacing;
+	case Right:
+		head->move(Right);
+		shaft->move(Right);
 		break;
-	case up:
-		RefPoint.y += config.gridSpacing;
+	case Up:
+		head->move(Up);
+		shaft->move(Up);
 		break;
-	case left:
-		RefPoint.x -= config.gridSpacing;
+	case Left:
+		head->move(Left);
+		shaft->move(Left);
 		break;
-	case down:
-		RefPoint.y -= config.gridSpacing;
+	case Down:
+		head->move(Down);
+		shaft->move(Down);
 		break;
 	}
-	point headRef = { RefPoint.x + config.arrowShape.shaftWdth / 2 , RefPoint.y - config.arrowShape.headHeight / 2 };
-	point head2 = { headRef.x, headRef.y + config.arrowShape.headHeight  };
-	point head3 = { headRef.x + config.arrowShape.headWdth , headRef.y + config.arrowShape.headHeight / 2  };
-	head = new triangle(pGame, headRef, head2, head3);
-	shaft->move(dir);
+
 
 	stepCount++;
-movecount++;
+
 }
 
-bool Arrow::check_boundries()
-{
-	return head->check_boundries();
-	return shaft->check_boundries();
-}
+bool Arrow::matches(const shape* target) const {
+	const Arrow* targetArrow = dynamic_cast<const Arrow*>(target);
+	if (targetArrow) {
+		return shaft->matches(targetArrow->shaft)
+			&& head->matches(targetArrow->head);
 
+	}
+	return false;
+}
 
