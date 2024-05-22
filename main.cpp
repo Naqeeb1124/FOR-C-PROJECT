@@ -1,5 +1,5 @@
 #include "game.h"
-
+#include <conio.h>
 
 int main()
 {
@@ -8,8 +8,6 @@ int main()
 	game Game;
 	
 	Game.run();
-
-	
 	return 0;
 }
 
