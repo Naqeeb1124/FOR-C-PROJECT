@@ -5,34 +5,34 @@
 //The folowing struct contains all game configurations
 // (MAY be loaded from a configuration file later)
 __declspec(selectany) //This line to prevent "redefinition error"
-struct 		
+struct
 {
-	int	windWidth=1300, windHeight=700,	//Window width and height
-		wx=5, wy=5,			//Window starting coordinates
+	int	windWidth = 1300, windHeight = 700,	//Window width and height
+		wx = 5, wy = 5,			//Window starting coordinates
 
 		//The window is divded into 3 areas: toolbar, Working area, and statusbar
-		toolBarHeight=60,		//Tool Bar Height (distance from top of window to bottom line of toolbar)
+		toolBarHeight = 60,		//Tool Bar Height (distance from top of window to bottom line of toolbar)
 		toolbarItemWidth = 70,			//Width of each icon in toolbar
-		statusBarHeight=50;	//Status Bar Height
-	
+		statusBarHeight = 50;	//Status Bar Height
+
 	int remainingHeight = windHeight - toolBarHeight - statusBarHeight;
 
 	int gridHeight = int(remainingHeight * (2 / 3.0)); 		//The grid is where bricks can be drawn
 
 	//Default colors
 	color	penColor = RED,			//color used to draw borders/write messages
-			fillColor = RED,			//shapes fill color (Default)
-			bkGrndColor= LAVENDER,		//Screen Background color
-			statusBarColor = LIGHTSEAGREEN;	//background color of the status
-	int penWidth=3;			//width of the pen that draws shapes
+		fillColor = RED,			//shapes fill color (Default)
+		bkGrndColor = LAVENDER,		//Screen Background color
+		statusBarColor = LIGHTSEAGREEN;	//background color of the status
+	int penWidth = 3;			//width of the pen that draws shapes
 
 
 	color gridDotsColor = RED;
-	int gridSpacing=30;	//spacing between grid points
+	int gridSpacing = 30;	//spacing between grid points
 
 	////// Configuration for the composite shapes //////
 	// default Ref Point for any newly created shape 
-	int RefX = windWidth *  (2.0 / 3);
+	int RefX = windWidth * (2.0 / 3);
 	int RefY = windHeight * (0.5);
 
 	////-----  Sign Shape Confoguration ---------////
@@ -45,6 +45,7 @@ struct
 	struct {
 		int baseWdth = 100, baseHeight = 80;
 		int roofWdth = 120, roofHeight = 60;
+		int chimneyWdth = 30, chimneyHeight = 80;
 	}houseShape;
 
 	struct {
@@ -55,6 +56,8 @@ struct
 
 	struct {
 		int tHullWdth = 100, bHullWdth = 60, hullHeight = 30;
+		int RhullWdth = 60;
+		int thullWdthT = 20;
 		int sailWdth = 80, sailHeight = 40;
 		int mastHeight = 40;
 	}boatShape;
@@ -84,19 +87,19 @@ enum toolbarItem //The items of the  toolbar (you should add more items)
 
 	ITM_PLANE,		//Draw Plane on the grid
 
-	ITM_ROCKET,		//Draw Rocket on the grid
+	ITM_ARR,		//Draw Arrow on the grid
 
-	ITM_TOWER,		//Draw Tower on the grid
+	ITM_HOUSE,		//Draw House on the grid
 
-	ITM_TREE,		//Draw Tree on the grid
-	
+	ITM_SIGN,		//Draw Sign on the grid
+
 	ITM_ZOOMIN,		//Zoom in shape
 
 	ITM_ZOOMOUT,	//Zoom out shape
 
 	ITM_ROTATE,		//Rotate shape CW
 
-	ITM_FLIP,		//Flip Shape
+	ITM_FLIP,	//Zoom out shape
 
 	ITM_REFRESH,	//Reset game
 
@@ -116,14 +119,4 @@ enum toolbarItem //The items of the  toolbar (you should add more items)
 	ITM_CNT		//no. of toolbar items ==> This should be the last line in this enum
 
 };
-
-//function to make rotate easier:
-
-point multiplyByMatrix(const point& p) {
-	int newX = p.y;
-	int newY = -p.x;
-	point newP = { newX,newY };
-
-	return newP;
-}
 
