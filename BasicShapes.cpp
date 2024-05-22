@@ -1,8 +1,6 @@
 #include "BasicShapes.h"
 #include "gameConfig.h"
 #include "game.h"
-#include <fstream>
-
 
 ////////////////////////////////////////////////////  class Rect  ///////////////////////////////////////
 
@@ -13,17 +11,7 @@ Rect::Rect(game* r_pGame, point ref, int r_hght, int r_wdth) :shape(r_pGame, ref
 	wdth = r_wdth;
 }
 
-void Rect::setFillColor(color c)
-{
-	fillColor = c;
-}
 
-void Rect::save(ofstream& OutFile)const
-{
-	OutFile << "RECT " << RefPoint.x << " " << RefPoint.y << " " << hght << " " << wdth << " "
-		<< fillColor.ucRed << " " << fillColor.ucGreen << " " << fillColor.ucBlue << " " << borderColor.ucRed
-		<< " " << borderColor.ucGreen << " " << borderColor.ucBlue << endl;
-}
 
 void Rect::draw() const
 {
@@ -55,7 +43,7 @@ void Rect::resize_up()
 
 void Rect::resize_down()
 {
-	
+
 	wdth /= 2;
 	hght /= 2;
 }
@@ -70,48 +58,41 @@ void Rect::flip()
 bool Rect::matches(const shape* target) const {
 	const Rect* targetRect = dynamic_cast<const Rect*>(target);
 	if (targetRect) {
-		return hght == targetRect->hght && wdth == targetRect->wdth;
+		
+		return (hght - targetRect->hght) < config.gridSpacing && (wdth - targetRect->wdth) < config.gridSpacing && (RefPoint.x - targetRect->RefPoint.x) < config.gridSpacing && (RefPoint.y - targetRect->RefPoint.y) < config.gridSpacing;
+		
 	}
 	return false;
 }
 
-	bool Rect::check_boundries()
+
+
+void Rect::move(direction dir)
+{
+	point currentRef = getRefPoint();
+	point newRef;
+	switch (dir)
 	{
-		POINT upper_right, lower_left;
-		upper_right.y = RefPoint.y - hght / 2;
-		upper_right.x = RefPoint.x + wdth / 2;
-		lower_left.y = RefPoint.y + hght / 2;
-		lower_left.x = RefPoint.x - wdth / 2;
-		if (upper_right.y > config.remainingHeight || upper_right.y<config.toolBarHeight || lower_left.y>config.remainingHeight || lower_left.y < config.toolBarHeight)
-		{
-			return true;
-		}
-		if (upper_right.x > config.windWidth || upper_right.x < config.wx)
-		{
-			return true;
-		}
-		else
-			return false;
-	}
+	case Up:
+		currentRef.y -= config.gridSpacing;
+		break;
+	case Left:
+		currentRef.x -= config.gridSpacing;
+		break;
+	case Down:
+		currentRef.y += config.gridSpacing;
+		break;
+	case Right:
+		currentRef.x += config.gridSpacing;
+		break;
+	}setRefPoint(currentRef);
+}
 
 ////////////////////////////////////////////////////  class circle  ///////////////////////////////////////
 //TODO: Add implementation for class circle here
 circle::circle(game* r_pGame, point ref, int r) :shape(r_pGame, ref)
 {
 	rad = r;
-}
-
-
-void circle::save(ofstream& OutFile) const
-{
-	OutFile << "CIRCLE " << RefPoint.x << " " << RefPoint.y << " " << rad << " " <<
-		fillColor.ucRed << " " << fillColor.ucGreen << " " << fillColor.ucBlue << " " <<
-		borderColor.ucRed << " " << borderColor.ucGreen << " " << borderColor.ucBlue << endl;
-}
-
-void circle::setFillColor(color c)
-{
-	fillColor = c;
 }
 
 void circle::draw() const
@@ -126,7 +107,7 @@ void circle::draw() const
 void circle::resize_up()
 {
 	window* pW = pGame->getWind();	//get interface window
-	pW->DrawCircle(RefPoint.x-rad, RefPoint.y-rad, rad, FILLED);
+	pW->DrawCircle(RefPoint.x - rad, RefPoint.y - rad, rad, FILLED);
 	rad *= 2;
 }
 
@@ -135,21 +116,6 @@ void circle::resize_down()
 	window* pW = pGame->getWind();	//get interface window
 	pW->DrawCircle(RefPoint.x + rad, RefPoint.y + rad, rad, FILLED);
 	rad /= 2;
-}
-
-bool circle::check_boundries()
-{
-	point upper_right, lower_left;
-	upper_right.x = rad + RefPoint.x;
-	upper_right.y = rad - RefPoint.y;
-	lower_left.x = rad - RefPoint.x;
-	lower_left.y = rad + RefPoint.y;
-	if (upper_right.y > config.remainingHeight || upper_right.y<config.toolBarHeight || lower_left.y>config.remainingHeight || lower_left.y < config.toolBarHeight)
-		return true;
-	if (upper_right.x > config.windWidth || upper_right.x < config.wx || lower_left.x > config.windWidth || lower_left.x < config.wx)
-		return true;
-	else
-		return false;
 }
 
 void circle::flip()
@@ -161,10 +127,39 @@ void circle::rotate()
 
 }
 
+void circle::move(direction dir)
+{
+	point currentRef = getRefPoint();
+	point newRef;
+	switch (dir)
+	{
+	case Up:
+		currentRef.y -= config.gridSpacing;
+		break;
+	case Left:
+		currentRef.x -= config.gridSpacing;
+		break;
+	case Down:
+		currentRef.y += config.gridSpacing;
+		break;
+	case Right:
+		currentRef.x += config.gridSpacing;
+		break;
+	}setRefPoint(currentRef);
+}
+
+bool circle::matches(const shape* target) const {
+	const circle* targetCircle = dynamic_cast<const circle*>(target);
+	if (targetCircle) {
+		return rad == targetCircle->rad && (RefPoint.x - targetCircle->RefPoint.x) < config.gridSpacing && (RefPoint.y - targetCircle->RefPoint.y) < config.gridSpacing;
+	}
+	return false;
+}
+
 
 ////////////////////////////////////////////////////  class triangle  ///////////////////////////////////////
 //TODO: Add implementation for class triangle here
-triangle::triangle(game* r_pGame, point ref,point r_vert2, point r_vert3) :shape(r_pGame, ref)
+triangle::triangle(game* r_pGame, point ref, point r_vert2, point r_vert3) :shape(r_pGame, ref)
 {
 	//vertex1 is the ref point
 	vertex1 = ref;
@@ -172,27 +167,15 @@ triangle::triangle(game* r_pGame, point ref,point r_vert2, point r_vert3) :shape
 	vertex3 = r_vert3;
 }
 
-void triangle::setFillColor(color c)
-{
-	fillColor = c;
-}
-
-void triangle::save(ofstream& OutFile) const
-{
-	OutFile << "TRINGLE " << vertex1.x << " " << vertex1.y << " " << vertex2.x << " " << vertex2.y << " "
-		<< vertex3.x << " " << vertex3.y << " " << fillColor.ucRed << " " << fillColor.ucGreen << " " << fillColor.ucBlue <<
-		" " << borderColor.ucRed << " " << borderColor.ucGreen << " " << borderColor.ucBlue << endl;
-}
-
 void triangle::draw() const
 {
-	
+
 	point v1 = vertex1, v2 = vertex2, v3 = vertex3;
 
 	window* pW = pGame->getWind();
 	pW->SetPen(borderColor, config.penWidth);
 	pW->SetBrush(fillColor);
-	pW->DrawTriangle(vertex1.x,vertex1.y, vertex2.x, vertex2.y, vertex3.x, vertex3.y);
+	pW->DrawTriangle(vertex1.x, vertex1.y, vertex2.x, vertex2.y, vertex3.x, vertex3.y);
 }
 
 
@@ -216,32 +199,37 @@ void triangle::rotate()
 	vertex3.y = RefPoint.y + rotatedV3.y;
 }
 
-point triangle::getVert2()
+point triangle::getVert2() const
 {
 	return vertex2;
 }
-point triangle::getVert3()
+point triangle::getVert3() const
 {
 	return vertex3;
 }
 
-point triangle::setvert3(point vert)
+void triangle::setvert1(point v)
 {
-	return vertex3 = vert;
+	vertex1 = v;
 }
 
-point triangle::setvert2(point vert)
+void triangle::setvert3(point vert)
 {
-	return vertex2 = vert;
+	vertex3 = vert;
+}
+
+void triangle::setvert2(point vert)
+{
+	vertex2 = vert;
 }
 
 
 void triangle::resize_up()
 {
-	 length_side_1 = sqrt(pow(vertex2.x - RefPoint.x, 2) + pow(vertex2.y - RefPoint.y, 2));
-	 length_side_2 = sqrt(pow(vertex3.x - RefPoint.x, 2) + pow(vertex3.y - RefPoint.y, 2));
-	 length_side_3 = sqrt(pow(vertex3.x - vertex2.x, 2) + pow(vertex3.y - vertex2.y, 2));
-	 length_side_1 *= 2; length_side_2 *= 2; length_side_3 *= 2;
+	length_side_1 = sqrt(pow(vertex2.x - RefPoint.x, 2) + pow(vertex2.y - RefPoint.y, 2));
+	length_side_2 = sqrt(pow(vertex3.x - RefPoint.x, 2) + pow(vertex3.y - RefPoint.y, 2));
+	length_side_3 = sqrt(pow(vertex3.x - vertex2.x, 2) + pow(vertex3.y - vertex2.y, 2));
+	length_side_1 *= 2; length_side_2 *= 2; length_side_3 *= 2;
 }
 
 void triangle::resize_down()
@@ -252,23 +240,51 @@ void triangle::resize_down()
 }
 
 void triangle::flip()
-{	point
-	temp = vertex1;  // Store the first vertex temporarily
+{
+	point
+		temp = vertex1;  // Store the first vertex temporarily
 	vertex1 = vertex3;      // Assign the third vertex to the first position
 	vertex3 = temp;
 }
 
-bool triangle::check_boundries()
+void triangle::move(direction dir)
 {
-	point ver1 = getvert1(), ver3 = getVert3(), ver2 = getVert2();
-	if (ver1.y > config.remainingHeight || ver1.y<config.toolBarHeight || ver2.y>config.remainingHeight || ver2.y < config.toolBarHeight || ver3.y>config.remainingHeight || ver3.y < config.toolBarHeight)
-		return true;
-	if (ver1.x > config.windWidth || ver1.x<config.wx || ver2.x>config.windWidth || ver2.x < config.wx || ver3.x>config.windWidth || ver3.x < config.wx)
-		return true;
-	else
-		return false;
+	//just in case i have to update vertex2 and 3.
+	point currentV2 = getVert2();
+	point currentV3 = getVert3();
+	switch (dir)
+	{
+	case Up:
+		RefPoint.y -= config.gridSpacing;
+		currentV2.y -= config.gridSpacing;
+		currentV3.y -= config.gridSpacing;
+		break;
+	case Left:
+		RefPoint.x -= config.gridSpacing;
+		currentV2.x -= config.gridSpacing;
+		currentV3.x -= config.gridSpacing;
+		break;
+	case Down:
+		RefPoint.y += config.gridSpacing;
+		currentV2.y += config.gridSpacing;
+		currentV3.y += config.gridSpacing;
+		break;
+	case Right:
+		RefPoint.x += config.gridSpacing;
+		currentV2.x += config.gridSpacing;
+		currentV3.x += config.gridSpacing;
+		break;
+	}setvert1(RefPoint), setvert2(currentV2), setvert3(currentV3);
 }
 
+
+bool triangle::matches(const shape* target) const {
+	const triangle* targetTri = dynamic_cast<const triangle*>(target);
+	if (targetTri) {
+		return (vertex1.x - targetTri->vertex1.x) < config.gridSpacing  && (vertex1.y - targetTri->vertex1.y) < config.gridSpacing  && (vertex2.x - targetTri->vertex2.x) < config.gridSpacing && (vertex2.y - targetTri->vertex2.y) < config.gridSpacing && (vertex3.x - targetTri->vertex3.x) < config.gridSpacing && (vertex3.y - targetTri->vertex3.y) < config.gridSpacing;
+	}
+	return false;
+}
 
 ////////////////////////////////////////////////////  class line  ///////////////////////////////////////
 line::line(game* r_pGame, point ref, point Length) :shape(r_pGame, ref)
@@ -276,27 +292,13 @@ line::line(game* r_pGame, point ref, point Length) :shape(r_pGame, ref)
 	lineLength = Length;
 }
 
-void line::setFillColor(color c)
-{
-	fillColor = c;
-}
-
 void line::draw() const {
 	int x1 = RefPoint.x, y1 = RefPoint.y;
-	int x2 = lineLength.x, y2 = lineLength.y;  
+	int x2 = lineLength.x, y2 = lineLength.y;
 	window* pW = pGame->getWind();
 	pW->SetPen(borderColor, config.penWidth);
 	pW->DrawLine(x1, y1, x2, y2);
 }
-
-
-void line::save(ofstream& OutFile) const
-{
-	OutFile << "LINE " << RefPoint.x << " " << RefPoint.y << " " << lineLength.x << " " << lineLength.y << " "
-		<< fillColor.ucRed << " " << fillColor.ucGreen << " " << fillColor.ucBlue << " " <<
-		borderColor.ucRed << " " << borderColor.ucGreen << " " << borderColor.ucBlue << endl;
-}
-
 
 void line::rotate()
 {
@@ -309,7 +311,7 @@ void line::rotate()
 
 }
 
-point line::getPoint2()
+point line::getPoint2() const
 {
 	return lineLength;
 }
@@ -324,122 +326,52 @@ void line::resize_down()
 	lineLength.y /= 2;	//////ISSUE
 }
 
-bool line::check_boundries()
+void line::setPoint2(point p)
 {
-	point point1 = RefPoint, point2 = lineLength;
-	if (point2.x > config.windWidth || point2.x<config.wx || point1.x>config.windWidth || point1.x < config.wx)
-		return true;
-	if (point1.y > config.remainingHeight || point2.y > config.remainingHeight || point1.y < config.toolBarHeight || point2.y < config.toolBarHeight)
-		return true;
-	else
-		return false;
+	lineLength = p;
 }
-
 void line::flip()
 {
 
 }
 
-
-
-////////////////////////////////////////////////////  class polygon  ///////////////////////////////////////
-polygon::polygon(game* r_pGame, point ref, int r_pline1, int r_pline2, int r_hght) :shape(r_pGame, ref)
+void line::move(direction dir)
 {
-	Pline1 = r_pline1;
-	Pline2 = r_pline2;
-	hght = r_hght;
+	point currentRef = getRefPoint();
+	point newRef;
+	point currPoint2 = getPoint2();
+	switch (dir)
+	{
+	case Up:
+		currentRef.y -= config.gridSpacing;
+		currPoint2.y -= config.gridSpacing;
+		break;
+	case Left:
+		currentRef.x -= config.gridSpacing;
+		currPoint2.x -= config.gridSpacing;
 
+		break;
+	case Down:
+		currentRef.y += config.gridSpacing;
+		currPoint2.y += config.gridSpacing;
 
+		break;
+	case Right:
+		currentRef.x += config.gridSpacing;
+		currPoint2.x += config.gridSpacing;
+
+		break;
+	}setRefPoint(currentRef), setPoint2(currPoint2);
 }
 
-void polygon::save(ofstream& OutFile) const
-{
-	OutFile << "POLYGON " << RefPoint.x << " " << RefPoint.y << " " << Pline1 << " " << Pline2 << " " << hght << " " <<
-		fillColor.ucRed << " " << fillColor.ucGreen << " " << fillColor.ucBlue << " " << borderColor.ucRed << " " <<
-		borderColor.ucGreen << " " << borderColor.ucBlue << endl;
-}
-
-
-void polygon::draw() const
-{
-	const int x_coordinates_array[4] = { vertex1.x, vertex2.x,vertex3.x,vertex4.x };
-	const int y_coordinates_array[4] = { vertex1.y, vertex2.y, vertex3.y, vertex4.y };
-
-	window* pW = pGame->getWind();
-	pW->SetPen(borderColor, config.penWidth);
-	pW->SetBrush(fillColor);
-	pW->DrawPolygon(x_coordinates_array, y_coordinates_array,4, FILLED);
-}
-
-void polygon::setFillColor(color c)
-{
-	fillColor = c;
-}
-
-void polygon::rotate()
-{
-	//apply the same procedure as from triangle.
-
-	point rV1 = { vertex1.x - RefPoint.x, vertex1.y - RefPoint.y };
-	point rV2 = { vertex2.x - RefPoint.x, vertex2.y - RefPoint.y };
-	point rV3 = { vertex3.x - RefPoint.x, vertex3.y - RefPoint.y };
-	point rV4 = { vertex4.x - RefPoint.x, vertex4.y - RefPoint.y };
-
-	point rotatedV1 = multiplyByMatrix(rV1);
-	point rotatedV2 = multiplyByMatrix(rV2);
-	point rotatedV3 = multiplyByMatrix(rV3);
-	point rotatedV4 = multiplyByMatrix(rV4);
-
-	
-	vertex1.x = RefPoint.x + rotatedV1.x;
-	vertex1.y = RefPoint.y + rotatedV1.y;
-	vertex2.x = RefPoint.x + rotatedV2.x;
-	vertex2.y = RefPoint.y + rotatedV2.y;
-	vertex3.x = RefPoint.x + rotatedV3.x;
-	vertex3.y = RefPoint.y + rotatedV3.y;
-	vertex4.x = RefPoint.x + rotatedV4.x;
-	vertex4.y = RefPoint.y + rotatedV4.y;
+bool line::matches(const shape* target) const {
+	const line* targetLine = dynamic_cast<const line*>(target);
+	if (targetLine) {
+		return (lineLength.x - targetLine->lineLength.x) < config.gridSpacing && (lineLength.y - targetLine->lineLength.y)<config.gridSpacing && (RefPoint.x - targetLine->RefPoint.x) < config.gridSpacing;
+	}
+	return false;
 }
 
 
-void polygon::resize_up()
-{
-	Pline1 *= 2;
-	Pline2 *= 2;
-	hght *= 2;
-}
 
-void polygon::resize_down()
-{
 
-	Pline1 /= 2;
-	Pline2 /= 2;
-	hght /= 2;
-}
-
-void polygon::flip()
-{
-	int temp;
-	temp = Pline1;
-	Pline1 = Pline2;
-	Pline2 = temp;
-}
-
-bool polygon::check_boundries()
-{
-	point upper_right, upper_left, upper, lower_right, lower_left;
-	upper_right = { Pline1 / 2 + RefPoint.x,hght / 2 - RefPoint.y };
-	upper_left = { Pline1 / 2 - RefPoint.x,hght / 2 - RefPoint.y };
-	lower_right = { Pline2 / 2 + RefPoint.x,hght / 2 + RefPoint.y };
-	lower_left = { Pline2 / 2 - RefPoint.x,hght / 2 + RefPoint.y };
-	if (upper_right.x > config.windWidth || upper_left.x<config.wx || upper_left.x>config.windWidth || upper_right.x < config.wx)
-		return true;
-	if (lower_right.x > config.windWidth || lower_left.x<config.wx || lower_left.x>config.windWidth || lower_right.x < config.wx)
-		return true;
-	if (upper_right.y > config.remainingHeight || upper_left.y<config.toolBarHeight || upper_left.y>config.remainingHeight || upper_right.y < config.toolBarHeight)
-		return true;
-	if (lower_right.y > config.remainingHeight || lower_left.y<config.toolBarHeight || lower_left.y>config.remainingHeight || lower_right.y < config.toolBarHeight)
-		return true;
-	else
-		return false;
-}
