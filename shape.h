@@ -8,7 +8,7 @@ struct point
 {
 	int x, y;
 public:
-	
+
 	bool operator==(const point& other) const {
 		return x == other.x && y == other.y;
 	}
@@ -32,13 +32,12 @@ enum ShapeType
 	arrow, //TOP G ARROW SHOW US THE WAY TO SUCCESS BIG TOP G RAAAAAAAAAAAAAAAAAAAAAAAAAAAH
 };
 
-
 enum direction
 {
 	Right,
-	up,
+	Up,
 	Left,
-	down
+	Down
 };
 
 //Base class for all shapes including Basic shapes, Composite shapes
@@ -48,8 +47,8 @@ protected:
 	point RefPoint;		//Each shape must have a reference point
 	game* pGame;        //pointer to game object
 	color fillColor;	//shape fill color
-	color borderColor; //shape border color
-	int stepCount;
+	color borderColor;	//shape border color
+	int stepCount = 0;
 public:
 	shape(game* r_pGame, point ref);
 	virtual void draw() const = 0;//for a shape to draw itself on the screen
@@ -59,20 +58,19 @@ public:
 	point getRefPoint();
 	static point multiplyByMatrix(point& p);
 	int getStepCount() const;
-	virtual void setFillColor(color c);
-
+	virtual bool matches(const shape* target) const = 0;
+	virtual
+		virtual ~shape() = default;
 	//-- The following functions should be supported by the shape class
 	//-- It should be overridden by each inherited shape
 	//-- Decide the parameters that you should pass to each function	
 
-	/*virtual void rotate() = 0;*/	//Rotate the shape
-	virtual void flip()=0;
-	virtual void resize_up()=0;	//Resize the shape
-	virtual void resize_down()=0;
+	virtual void flip() = 0;
+	virtual void resize_up() = 0;	//Resize the shape
+	virtual void resize_down() = 0;
 	/*virtual void move(direction dir)=0;*/		//Move the shape
-	virtual void save(ofstream &OutFile)const = 0;	//Save the shape parameters to the file
+	//virtual void save(ofstream &OutFile) = 0;	//Save the shape parameters to the file
 	//virtual void load(ifstream &Infile) = 0;	//Load the shape parameters to the file
-
 
 
 };
