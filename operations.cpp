@@ -1,8 +1,7 @@
 #include "operations.h"
 #include "game.h"
 #include "CompositeShapes.h"
-#include "CMUgraphicsLib/auxil.h"
-#include <fstream>
+#include "toolbar.h"
 /////////////////////////////////// class operation  //////////////////
 operation::operation(game* r_pGame)
 {
@@ -90,7 +89,9 @@ operSelectLevel::operSelectLevel(game* r_pGame) : operation(r_pGame)
 {
 }
 
-
+operExit::operExit(game* r_pGame) : operation(r_pGame)
+{
+}
 
 
 void operAddBoat::Act()
@@ -201,7 +202,7 @@ void operAddHouse::Act()
 	//take the aligned point as the sign shape ref point
 	point HouseShapeRef = { xGrid,yGrid };
 
-	//create a sign shape
+	//create a house shape
 	shape* psh = new House(pGame, HouseShapeRef);
 
 	//Add the shape to the grid
@@ -237,53 +238,58 @@ void operZoomIn::Act()
 {
 	grid* pGrid = pGame->getGrid();
 	shape* psh = pGrid->getActiveShape();
-	psh->resize_up();
+	if (psh)
+	{
+		psh->resize_up();
+	}
 }
 
 void operZoomOut::Act()
 {
 	grid* pGrid = pGame->getGrid();
 	shape* psh = pGrid->getActiveShape();
-	psh->resize_down();
-
+	if (psh)
+	{
+		psh->resize_down();
+	}
 }
 
 void operRotate::Act()
 {
 	grid* pGrid = pGame->getGrid();
 	shape* psh = pGrid->getActiveShape();
-	psh->rotate();
-
+	if (psh)
+	{
+		psh->rotate();
+	}
 }
 
 void operFlip::Act()
 {
 	grid* pGrid = pGame->getGrid();
 	shape* psh = pGrid->getActiveShape();
-	psh->flip();
-
+	if (psh)
+	{
+		psh->flip();
+	}
 }
 
 void operRefresh::Act()
 {
-	window* pw = pGame->getWind();
+	int lives = pGame->getLives();
+	if (lives > 0)
+	{
+		pGame->clearshapeVec();
+		pGame->shapeGeneration();
+		pGame->declives(1);
+		pGame->clearLevelScoreLives();
+		pGame->DrawLevelScoreLives();
 
-	//TODO:
-	// Don't allow adding new shape if there is alreday an active shape
-
-	//align reference point to the nearest grid point
-	int xGrid = config.RefX - config.RefX % config.gridSpacing;
-	int yGrid = config.RefY - config.RefX % config.gridSpacing;
-
-	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
-
-	//create a sign shape
-	shape* psh = new Sign(pGame, signShapeRef);
-
-	//Add the shape to the grid
-	grid* pGrid = pGame->getGrid();
-	pGrid->setActiveShape(psh);
+	}
+	else
+	{
+		pGame->printMessage("You cannot refresh Anymore");
+	}
 
 }
 
@@ -313,43 +319,10 @@ void operHint::Act()
 void operDelete::Act()
 {
 	grid* pGrid = pGame->getGrid();
-	shape* psh = pGrid->getActiveShape();
-	pGrid->deleteActiveShape(psh);
+	pGrid->deleteActiveShape();
 }
 
 void operSave::Act()
-{
-	ofstream OutFile("savefile.txt");
-	if (OutFile.is_open()) {
-		grid* pGrid = pGame->getGrid();
-		shape** shapelist = pGrid->shapelistt();
-		int shapecount = pGrid->geetshapecount();
-
-		// Save active shape if any
-		shape* activeShape = pGrid->getActiveShape();
-		if (activeShape) {
-			activeShape->save(OutFile);
-		}
-
-		// Save all shapes in the grid
-		for (int i = 0; i < shapecount; ++i) {
-			if (shapelist[i]) {
-				shapelist[i]->save(OutFile);
-			}
-		}
-
-		OutFile.close();
-		pGame->printMessage("Game saved successfully.");
-	}
-	else {
-		pGame->printMessage("Failed to open save file.");
-
-
-	}
-
-}
-
-void operLoad::Act()
 {
 	window* pw = pGame->getWind();
 
@@ -369,72 +342,64 @@ void operLoad::Act()
 	//Add the shape to the grid
 	grid* pGrid = pGame->getGrid();
 	pGrid->setActiveShape(psh);
+}
 
+void operLoad::Act()
+{
+
+	window* pw = pGame->getWind();
+
+	//TODO:
+	// Don't allow adding new shape if there is alreday an active shape
+
+	//align reference point to the nearest grid point
+	int xGrid = config.RefX - config.RefX % config.gridSpacing;
+	int yGrid = config.RefY - config.RefX % config.gridSpacing;
+
+	//take the aligned point as the sign shape ref point
+	point signShapeRef = { xGrid,yGrid };
+
+	//create a sign shape
+	shape* psh = new Sign(pGame, signShapeRef);
+
+	//Add the shape to the grid
+	grid* pGrid = pGame->getGrid();
+	pGrid->setActiveShape(psh);
 }
 
 void operSelectLevel::Act()
 {
 	window* pw = pGame->getWind();
-
-	//TODO:
-	// Don't allow adding new shape if there is alreday an active shape
-
-	//align reference point to the nearest grid point
-	int xGrid = config.RefX - config.RefX % config.gridSpacing;
-	int yGrid = config.RefY - config.RefX % config.gridSpacing;
-
-	//take the aligned point as the sign shape ref point
-	point signShapeRef = { xGrid,yGrid };
-
-	//create a sign shape
-	shape* psh = new Sign(pGame, signShapeRef);
-
-	//Add the shape to the grid
-	grid* pGrid = pGame->getGrid();
-	pGrid->setActiveShape(psh);
-
-}
-
-
-
-
-move_shape::move_shape(game* r_pGame) :operation(r_pGame)
-{
-}
-
-void move_shape::Act()
-{
-	keytype itempressed;
-	window* pw = pGame->getWind();
-	grid* pg = pGame->getGrid();
-	shape* pe = pg->getactiveshape();
-	char cKeyData;
-	itempressed = pw->GetKeyPress(cKeyData);
-	do {
-		if (itempressed == ARROW)
+	string level = pGame->getSrting();
+	if (pGame->checkStoI(level))
+	{
+		int lev = stoi(level);
+		switch (lev)
 		{
-			pg->clearGridArea();
-			switch (cKeyData)
-			{
-			case 2:	//Down Arrow
-				pe->move(up);
-
-				break;
-			case 4:	//left Arrow
-				pe->move(left);
-
-				break;
-			case 6:	//Down Arrow
-				pe->move(right);
-
-				break;
-			case 8:	//Down Arrow
-				pe->move(down);
-
-				break;
-			}
-			pg->draw();
-			pw->UpdateBuffer();
+		case 0:
+			pGame->printMessage("Please Enter a valid number");
+			break;
+		default:
+			pGame->clearshapeVec();
+			pGame->clearLevelScoreLives();
+			pGame->setLevel(lev);
+			pGame->DrawLevelScoreLives();
+			pw->FlushKeyQueue();
+			pw->FlushMouseQueue();
+			pGame->shapeGeneration();
 		}
-	} while (itempressed != ESCAPE);
+	}
+	else
+		pGame->printMessage("Please Enter a valid number");
+
+}
+
+void operExit::Act()
+{
+	grid* grid = pGame->getGrid();
+	shape* psh = grid->getActiveShape();
+
+	delete psh;
+	psh = nullptr;
+
 }
