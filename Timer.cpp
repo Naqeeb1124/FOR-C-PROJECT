@@ -31,3 +31,9 @@ std::chrono::seconds Timer::getRemainingTime() const {
 
     return std::chrono::duration_cast<std::chrono::seconds>(duration - elapsedTime);
 }
+
+bool Timer::isSecondpassed() const
+{
+    auto currentTime = std::chrono::steady_clock::now();
+    return false; // ---------------------------------------------------to be checked-----------------------------
+}
