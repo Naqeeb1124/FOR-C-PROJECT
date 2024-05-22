@@ -1,12 +1,15 @@
 #pragma once
 #include "Basicshapes.h"
+#include "grid.h"
+#include "gameConfig.h"
+#include "game.h"
 
-#include <fstream>
+
 
 ////////////////////////////////////////////////////  class Sign  ///////////////////////////////////////
 //This class reprsents the composite shape "sign"
 //The sign is composed of 2 Recatngles
-/*				
+/*
 
 					 ------------------
 					|				   |
@@ -28,15 +31,13 @@ class Sign :public shape
 	Rect* top;
 public:
 	Sign(game* r_pGame, point ref);
-virtual void setFillColor(color c);
 	virtual void draw() const;
-virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
-	void move(direction dir) override;
-virtual bool check_boundries();
+	virtual void move(direction dir);
+	bool matches(const shape* target) const;
 
 };
 
@@ -51,54 +52,54 @@ class House :public shape
 	Rect* chimney;
 public:
 	House(game* r_pGame, point ref);
-virtual void setFillColor(color c);
 	virtual void draw() const;
-virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
-	void move(direction dir) override;
-virtual bool check_boundries();
+	virtual void move(direction dir);
+	bool matches(const shape* target) const;
+
 };
-
-
 
 class Car :public shape
 {
 	Rect* lowBody;
-	polygon* upBody;
+	Rect* upBody;
+	triangle* upBody1;
+	triangle* upBody2;
 	circle* frontTire;
 	circle* backTire;
 public:
 	Car(game* r_pGame, point ref);
-virtual void setFillColor(color c);
 	virtual void draw() const;
-virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
+	bool matches(const shape* target) const;
 	virtual void flip();
-	void move(direction dir) override;
-	virtual bool check_boundries();
+	virtual void move(direction dir);
+
 };
 
 class Boat :public shape
 {
-	polygon* hull;
+	triangle* hull1;
+	triangle* hull2;
+	Rect* hull;
 	triangle* sail;
 	line* mast;
 public:
 	Boat(game* r_pGame, point ref);
-virtual void setFillColor(color c);
 	virtual void draw() const;
-virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
-	void move(direction dir) override;
-virtual bool check_boundries();
+	virtual void move(direction dir);
+	bool matches(const shape* target) const;
+
+
 };
 
 class Plane :public shape
@@ -112,15 +113,14 @@ class Plane :public shape
 	triangle* lowStab;
 public:
 	Plane(game* r_pGame, point ref);
-virtual void setFillColor(color c);
 	virtual void draw() const;
-virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
-	void move(direction dir) override;
-	virtual bool check_boundries();
+	virtual void move(direction dir);
+	bool matches(const shape* target) const;
+
 
 };
 
@@ -131,15 +131,15 @@ class Arrow :public shape
 public:
 
 	Arrow(game* r_pGame, point ref);
-virtual void setFillColor(color c);
 	virtual void draw() const;
-virtual void save(ofstream& OutFile) const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
-	void move(direction dir) override;
-	virtual bool check_boundries();
+	virtual void move(direction dir);
+	bool matches(const shape* target) const;
+
+
 
 };
 
