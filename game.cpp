@@ -1,7 +1,7 @@
 #include "game.h"
 #include "gameConfig.h"
 
-
+#include <iostream>
 
 game::game()
 {
@@ -22,8 +22,10 @@ game::game()
 
 game::~game()
 {
+	this->clearshapeVec();
 	delete pWind;
 	delete shapesGrid;
+	delete gameToolbar;
 }
 
 
@@ -43,7 +45,84 @@ void game::clearStatusBar() const
 	pWind->SetBrush(config.statusBarColor);
 	pWind->DrawRectangle(0, config.windHeight - config.statusBarHeight, config.windWidth, config.windHeight);
 }
+//---------------Clear Sc/lev/live-------------
 
+void game::clearLevelScoreLives() const
+{
+
+	int Xco = (config.toolbarItemWidth * (ITM_CNT));
+	int Yco = config.toolBarHeight;
+	pWind->SetPen(config.bkGrndColor, 1);
+	pWind->SetBrush(config.bkGrndColor);
+	pWind->DrawRectangle(Xco, 0, 1350, Yco - 1);
+}
+//---------------Draw Level/score/live---------------------
+void game::DrawLevelScoreLives() const
+{
+	string sLevel = "Level: " + to_string(Level);
+	int XLevel = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
+	int YLevel = (2 * config.toolBarHeight) / 3;
+	pWind->SetPen(BLACK, 1);
+	pWind->SetFont(20, BOLD, BY_NAME, "Arial");
+	pWind->DrawString(XLevel - 15, YLevel, sLevel);
+
+
+	string sScore = "Score: " + to_string(Score);
+	int XScore = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
+	int YScore = config.toolBarHeight / 3;
+	pWind->SetPen(BLACK, 1);
+	pWind->SetFont(20, BOLD, BY_NAME, "Arial");
+	pWind->DrawString(XScore - 15, YScore, sScore);
+
+	string sLives = "Lives: " + to_string(Lives);
+	int XLives = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
+	int YLives = 0;
+	pWind->SetPen(BLACK, 1);
+	pWind->SetFont(20, BOLD, BY_NAME, "Arial");
+	pWind->DrawString(XLives - 15, YLives, sLives);
+}
+//--------------- Level---------------------
+
+void game::setLevel(int lev)
+{
+	Level = lev;
+}
+
+int game::getLevel() const
+{
+	return Level;
+}
+
+//--------------- Score---------------------
+
+void game::setScore(int sco)
+{
+	Score = sco;
+}
+
+int game::getScore() const
+{
+	return Score;
+}
+
+//--------------- Lives---------------------
+
+void game::setLives(int liv)
+{
+	Lives = liv;
+}
+
+int game::getLives() const
+{
+	return Lives;
+}
+
+void game::declives(int l)
+{
+	Lives = Lives - l;
+}
+
+//--------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////
 //Draws the menu (toolbar) in the mode
 void game::createToolBar()
@@ -60,14 +139,15 @@ void game::createGrid()
 	shapesGrid = new grid(gridUpperLeftPoint, config.windWidth, gridHeight, this);
 }
 
+
 operation* game::createRequiredOperation(toolbarItem clickedItem)
 {
-	operation* op=nullptr;
+	operation* op = nullptr;
 	switch (clickedItem)
 	{
 	case ITM_BOAT:
 		printMessage("You clicked on the Boat");
-		op = new move_shape(this);
+		op = new operAddBoat(this);
 		break;
 	case ITM_CAR:
 		printMessage("You clicked on the Car");
@@ -101,6 +181,10 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 		printMessage("You clicked on the 'Rotate' operation");
 		op = new operRotate(this);
 		break;
+	case ITM_FLIP:
+		printMessage("You clicked on the 'Flip' operation");
+		op = new operFlip(this);
+		break;
 	case ITM_REFRESH:
 		printMessage("You clicked on the 'Refresh' operation");
 		op = new operRefresh(this);
@@ -111,7 +195,7 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 		break;
 	case ITM_DELETE:
 		printMessage("You clicked on the 'Delete' operation");
-		op = new delete_shappe(this);
+		op = new operDelete(this);
 		break;
 	case ITM_SAVE:
 		printMessage("You clicked on the 'Save' operation");
@@ -123,8 +207,9 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 		break;
 	case ITM_SELECTLEVEL:
 		printMessage("You clicked on the 'Select Level' operation");
-		op = new move_shape(this);
+		op = new operSelectLevel(this);
 		break;
+	}
 	//case ADD THE MOVE IMAGE HERE:
 	//	printMessage("You clicked on the 'Select Level' operation");
 	//	op = new move_shape(this);
@@ -132,7 +217,6 @@ operation* game::createRequiredOperation(toolbarItem clickedItem)
 	//case ITM_EXIT:
 	//	op = new operExit(this);
 	//	break;
-	}
 	return op;
 }
 
@@ -181,6 +265,22 @@ string game::getSrting() const
 	}
 }
 
+bool game::checkStoI(string st)
+{
+	int counter = 0;
+	for (int i = 0; i < st.length(); i++)
+	{
+		if (st[i] >= '0' && st[i] <= '9')
+		{
+			counter++;
+		}
+
+	}
+	if (counter == st.length())
+		return true;
+	else
+		return false;
+}
 grid* game::getGrid() const
 {
 	// TODO: Add your implementation code here.
@@ -190,25 +290,73 @@ grid* game::getGrid() const
 
 
 ////////////////////////////////////////////////////////////////////////
-void game::run() 
+void game::run()
 {
+	srand(time(0));
+
+	char PressedKey{};
+	keytype K;
+	pWind->FlushKeyQueue();
+	pWind->FlushMouseQueue();
+	grid* pGrid = this->getGrid();
 	//This function reads the position where the user clicks to determine the desired operation
 	int x, y;
 	bool isExit = false;
+	shape* actShape = pGrid->getActiveShape();
 
 	//Change the title
 	pWind->ChangeTitle("- - - - - - - - - - SHAPE HUNT (CIE 101 / CIE202 - project) - - - - - - - - - -");
-	toolbarItem clickedItem=ITM_CNT;
+	toolbarItem clickedItem = ITM_CNT;
+	this->shapeGeneration();
+	//matching();
 	do
 	{
+
+		actShape = pGrid->getActiveShape();
+		pWind->GetKeyPress(PressedKey);
+		if (actShape != nullptr) {
+
+			if (PressedKey) {
+				cout << " " << actShape->getRefPoint().x << " " << actShape->getRefPoint().y << endl;
+
+				if (PressedKey == 32)
+				{
+					pGrid->matching();
+
+				}
+				if (PressedKey == 8 || PressedKey == 'w' || PressedKey == 'W')
+				{
+					pGrid->getActiveShape()->move(Up);
+					pGrid->draw();
+
+				}
+				if (PressedKey == 2 || PressedKey == 's' || PressedKey == 'S')
+				{
+					pGrid->getActiveShape()->move(Down);
+					pGrid->draw();
+				}
+				if (PressedKey == 6 || PressedKey == 'd' || PressedKey == 'D')
+				{
+					pGrid->getActiveShape()->move(Right);
+					pGrid->draw();
+				}
+				if (PressedKey == 4 || PressedKey == 'a' || PressedKey == 'A')
+				{
+					pGrid->getActiveShape()->move(Left);
+					pGrid->draw();
+				}
+			}
+		}
+
+
 		//printMessage("Ready...");
 		//1- Get user click
-		pWind->WaitMouseClick(x, y);	//Get the coordinates of the user click
+		pWind->GetMouseClick(x, y);	//Get the coordinates of the user click
 		//2-Explain the user click
 		//If user clicks on the Toolbar, ask toolbar which item is clicked
 		if (y >= 0 && y < config.toolBarHeight)
 		{
-			clickedItem=gameToolbar->getItemClicked(x);
+			clickedItem = gameToolbar->getItemClicked(x);
 
 			//3-create the approp operation accordin to item clicked by the user
 			operation* op = createRequiredOperation(clickedItem);
@@ -220,10 +368,24 @@ void game::run()
 
 
 			//Print Message for the user in the statusbar if s/he clicked on an icon in the toolbar
+		}
 
-		}	
+	} while (clickedItem != ITM_EXIT);
+}
 
-	} while (clickedItem!=ITM_EXIT);
+
+
+void game::shapeGeneration() const
+{
+	grid* pGrid = this->getGrid();
+	pGrid->randShapeGen();
+	pGrid->DrawRandomShapes();
+
+}
+void game::clearshapeVec() const
+{
+	grid* pGrid = this->getGrid();
+	pGrid->clearShapeVector();
 }
 
 
@@ -267,30 +429,16 @@ void game::run()
 //	// ...
 //}
 
-int game::incScore2() {
-	int score = getScore();
-	score += 2;
-	setScore(score);
-}
-
-int game::setScore(int s){
-	score = s;
-}
-
-int game::incScore1()
-{
-	int score = getScore();
-	score++;
-	setScore(score);
+void game::incScore(int s) {
+	Score += s;
+	setScore(Score);
 }
 
 
-int game::decScore1() {
-	int score = getScore();
-	score--;
-	setScore(score);
-}
 
-int game::getScore() const {
-	return score;
+
+
+void game::decScore(int s) {
+	Score -= s;
+	setScore(Score);
 }
