@@ -1,33 +1,26 @@
 #pragma once
 #include "CompositeShapes.h"
+#include <vector>
 
 class game;
 
-enum level
-{
-	level1,
-	level2,
-	level3,
-	leveln
-};
-
 class grid
 {
-	enum { MaxShapeCount = 1000  };	//assuming max shape count = 1000
-	
+	enum { MaxShapeCount = 1000 };	//assuming max shape count = 1000
+
 	int rows, cols;	//numner of rows and columns in the grid to draw grid points
 	int height, width;
 	point uprLeft;	//upper left point of the grid
 
 	//ShapeList should hold the RANDOMLY generated shapes
-	shape* shapeList[MaxShapeCount];	//2D array of shape pointers
+	/*shape* shapeList[MaxShapeCount];*/	//2D array of shape pointers
+	vector<shape*>genShapeList;
+	shape* activeShape ;	//The shape that the user works on to match to the ranom shapes
 
-	shape* activeShape;	//The shape that the user works on to match to the ranom shapes
-
-	int shapeCount;		//current number of shapes in the list
+	int shapeCount = 0;		//current number of shapes in the list
 	game* pGame;
+	int matchedShapes;
 
-	shape* getRandomShape(); const;
 public:
 	grid(point r_uprleft, int r_width, int r_height, game* r_pGame);
 	~grid();
@@ -36,13 +29,14 @@ public:
 	bool addShape(shape* newShape);
 	void setActiveShape(shape* actShape);
 	shape* getActiveShape();
-	//void deleteActiveShape(shape* activeShape); //Similar to cpp file
-	void draw_delete() const;
-
-int getnumofshapes(int level);
-
-		void addshapes(int level);
-	int geetshapecount();
-	shape** shapelistt();
+	void deleteActiveShape();
+	void randShapeGen();
+	void clearShapeVector();
+	void DrawRandomShapes();
+	int Getnumrandshape();
+	vector <shape*> GetShapeVector();
+	void matching();
+	int getShapeCount() const;
+	shape* getShapeList();
+	int getMatchedShapes() const;
 };
-
