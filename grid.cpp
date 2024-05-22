@@ -1,7 +1,8 @@
-#include "grid.h"
 #include "game.h"
 #include "gameConfig.h"
-
+#include "time.h"
+#include "cstdlib"
+#include <iostream>
 
 grid::grid(point r_uprleft, int wdth, int hght, game* pG)
 {
@@ -13,8 +14,8 @@ grid::grid(point r_uprleft, int wdth, int hght, game* pG)
 	cols = width / config.gridSpacing;
 	shapeCount = 0;
 
-	for (int i = 0; i < MaxShapeCount; i++)
-		shapeList[i] = nullptr;
+	//for (int i = 0; i < MaxShapeCount; i++)
+	//	shapeList[i] = nullptr;
 
 	activeShape = nullptr;
 
@@ -22,37 +23,37 @@ grid::grid(point r_uprleft, int wdth, int hght, game* pG)
 
 grid::~grid()
 {
-	for (int i = 0; i < shapeCount; i++)
-		delete shapeList[i];
+	//for (int i = 0; i < shapeCount; i++)
+	//	delete shapeList[i];
 }
 
 void grid::draw() const
 {
 	clearGridArea();
 	window* pWind = pGame->getWind();
-	
-	pWind->SetPen(config.gridDotsColor,1);
+
+	pWind->SetPen(config.gridDotsColor, 1);
 	pWind->SetBrush(config.gridDotsColor);
 
 	//draw dots showing the grid reference points
 	for (int r = 1; r < rows; r++)
 		for (int c = 0; c < cols; c++)
 			pWind->DrawCircle(c * config.gridSpacing, r * config.gridSpacing + uprLeft.y, 1);
-			//pWind->DrawPixel(c * config.gridSpacing, r * config.gridSpacing + uprLeft.y);
+	//pWind->DrawPixel(c * config.gridSpacing, r * config.gridSpacing + uprLeft.y);
 
-	//Draw ALL shapes
-	for (int i = 0; i < shapeCount; i++)
-			if (shapeList[i])
-				shapeList[i]->draw();	//draw each shape
+//Draw ALL shapes
+	for (int i = 0; i < genShapeList.size(); i++)
+		if (genShapeList[i])
+			genShapeList[i]->draw();	//draw each shape
 
 	//Draw the active shape
-	if(activeShape)
+	if (activeShape)
 		activeShape->draw();
 }
 
 void grid::clearGridArea() const
 {
-	window* pWind = pGame->getWind();	
+	window* pWind = pGame->getWind();
 	pWind->SetPen(config.bkGrndColor, 1);
 	pWind->SetBrush(config.bkGrndColor);
 	pWind->DrawRectangle(uprLeft.x, uprLeft.y, uprLeft.x + width, uprLeft.y + height);
@@ -65,143 +66,177 @@ bool grid::addShape(shape* newShape)
 	// 1- Check that the shape can be drawn witout being clipped by grid boundaries
 	// 2- check shape count doesn't exceed maximum count
 	// return false if any of the checks fail
-	
+	return 0;
 	//Here we assume that the above checks are passed
-	shapeList[shapeCount++] = newShape;
-	return true;
+	//shapeList[shapeCount++] = newShape;
+	//return true;
 }
 
-
-void grid::setActiveShape(shape* activeShape)
+void grid::setActiveShape(shape* actShape)
 {
+	if (activeShape)
+	{
+		delete activeShape;
+		activeShape = nullptr;
+	}
 	activeShape = actShape;
 }
+
 
 shape* grid::getActiveShape()
 {
 	return activeShape;
 }
 
-void grid::deleteActiveShape(shape* activeShape)
+void grid::deleteActiveShape()
 {
-	delete activeShape;
-	activeShape = nullptr;   ///Done by Ziad and it will be a comment until we find the problem
-}
-
-//void grid::draw_delete() const
-//{
-	//clearGridArea();
-	//window* pWind = pGame->getWind();
-
-	//pWind->SetPen(config.gridDotsColor, 1);
-	//pWind->SetBrush(config.gridDotsColor);
-
-	////draw dots showing the grid reference points
-	//for (int r = 1; r < rows; r++)
-		//for (int c = 0; c < cols; c++)
-			//pWind->DrawCircle(c * config.gridSpacing, r * config.gridSpacing + uprLeft.y, 1);
-	////pWind->DrawPixel(c * config.gridSpacing, r * config.gridSpacing + uprLeft.y);
-
-////Draw ALL shapes
-	//for (int i = 0; i < shapeCount; i++)
-		//if (shapeList[i])
-			//shapeList[i]->draw();	//draw each shape
-//}
-
-shape* grid::getRandomShape() const {
-    if (shapeCount > 0) {
-        int randomIndex = rand() % shapeCount;
-        return shapeList[randomIndex];
-    }
-    return nullptr; // if no naqqar available
-}
-
-
-int grid::getnumofshapes(int level)
-{
-	if (level == 1) 
-		return 1;
-	if (level == 2) 
-		return 3;
-	if (level == 3) 
-		return 5;
-	return 2 * level - 1;
-}
-
-
-void grid::addshapes(int level) {
-	int numShapesToAdd = getnumofshapes(level);
-	color shapecolor;
-
-	for (int i = 0; i < numShapesToAdd; i++) {
-		int shapeType = rand() % 6;
-		shape* newShape = nullptr;
-		point randomPoint;
-
-		do {
-			int ranRefx = (rand() % (width - 10)) + uprLeft.x + 30;
-			int ranRefy = (rand() % (height - 10)) + uprLeft.y + 30;
-			randomPoint = { ranRefx, ranRefy };
-
-			if (level >= 3) {
-				shapecolor = BLACK;
-			}
-			else {
-				shapecolor = color(rand() % 256, rand() % 256, rand() % 256);
-			}
-
-			switch (shapeType) {
-			case 0: newShape = new House(pGame, randomPoint); break;
-			case 1: newShape = new Sign(pGame, randomPoint); break;
-			case 2: newShape = new Boat(pGame, randomPoint); break;
-			case 3: newShape = new Plane(pGame, randomPoint); break;
-			case 4: newShape = new Car(pGame, randomPoint); break;
-			case 5: newShape = new Arrow(pGame, randomPoint); break;
-			}
-
-			if (newShape) {
-				newShape->setFillColor(shapecolor);
-
-				bool shouldRotate = rand() % 2;
-				if (shouldRotate) {
-					newShape->flip();
-				}
-
-				bool shouldResize = rand() % 2;
-				if (shouldResize) {
-					int upordown = rand() % 2;
-					if (upordown == 0) {
-						newShape->resize_down();
-					}
-					else {
-						newShape->resize_up();
-					}
-				}
-			}
-		} while (newShape && newShape->check_boundries());
-
-		if (newShape) {
-			addShape(newShape);
-		}
+	if (activeShape) {
+		delete activeShape;
+		activeShape = nullptr;
 	}
 }
 
-
-
-int grid::geetshapecount()
+void grid::randShapeGen()
 {
-	return shapeCount;
+	int lev = pGame->getLevel();
+	int noOfShapes = (2 * lev) - 1;
+	srand(time(0));
+
+	for (int i = 0; i < noOfShapes; i++)
+	{
+
+		toolbarItem gItem = toolbarItem((rand() % 6));
+		int WindowWidth = config.windWidth;
+		int WindowHeight = config.gridHeight;
+		int boundaryOffsetX = config.gridSpacing*2;
+		int boundaryOffsetY = config.gridSpacing * 3;
+		int x = rand() % ((WindowWidth - 2 * boundaryOffsetX)/config.gridSpacing);
+		int y = rand() % ((WindowHeight- 2 * boundaryOffsetY)/config.gridSpacing);
+		point gPoint = { x*config.gridSpacing + boundaryOffsetX,y*config.gridSpacing + config.toolBarHeight + boundaryOffsetY};
+		shape* genShape = nullptr;
+		switch (gItem)
+		{
+		case ITM_CAR:
+			genShape = new Car(pGame, gPoint);
+			break;
+
+		case ITM_BOAT:
+			genShape = new Boat(pGame, gPoint);
+			break;
+
+		case ITM_ARR:
+			genShape = new Arrow(pGame, gPoint);
+			break;
+
+		case ITM_PLANE:
+			genShape = new Plane(pGame, gPoint);
+			break;
+
+		case ITM_HOUSE:
+			genShape = new House(pGame, gPoint);
+			break;
+
+		case ITM_SIGN:
+			genShape = new Sign(pGame, gPoint);
+			break;
+		}
+
+		if (rand() % 2 == 0)
+		{
+			genShape->resize_down();
+		}
+		else
+		{
+			genShape->resize_up();
+		}
+
+
+
+		for (int i = 0; i < rand() % 4; i++)
+		{
+			genShape->rotate();
+		}
+
+		genShapeList.push_back(genShape);
+	}
+	shapeCount = genShapeList.size();
 }
 
-shape** grid::shapelistt()
+void grid::clearShapeVector()
 {
-	return shapeList;
+
+	for (int i = 0; i < genShapeList.size(); i++)
+	{
+		delete genShapeList[i];
+		genShapeList[i] = nullptr;
+	}
+
+	genShapeList.clear();
 }
 
+void grid::DrawRandomShapes()
+{
+	for (int i = 0; i < genShapeList.size(); i++)
+	{
+		genShapeList[i]->draw();
 
+	}
+}
 
+int grid::Getnumrandshape()
+{
+	return genShapeList.size();
+}
 
+vector<shape*> grid::GetShapeVector()
+{
+	return genShapeList;
+}
 
+void grid::matching()
+{
+	int numShapes = (2 * pGame->getLevel()) - 1;
+	int ms = 0;
+	bool boolean = false;
+	int c = 0;
+	for (int i = 0; i < shapeCount; i++)
+	{
+
+		if (activeShape->matches(genShapeList[i]))
+		{
+			boolean = true;
+			c = i;
+			break;
+		}
+
+	}
+	if(boolean){
+		pGame->incScore(2);
+		pGame->clearLevelScoreLives();
+		pGame->DrawLevelScoreLives();
+		delete activeShape;
+		activeShape = nullptr;
+		delete genShapeList[c];
+		genShapeList[c] = nullptr;
+		draw();
+		numShapes--;
+		ms++;
+		pGame->printMessage("Matched shapes as of now: " + to_string(ms));
+	}
+	else
+	{
+		pGame->decScore(1);
+		pGame->clearLevelScoreLives();
+		pGame->DrawLevelScoreLives();
+		pGame->printMessage("Matched shapes as of now: " + to_string(ms));
+
+	}
+}
+
+int grid::getMatchedShapes() const
+{
+	return matchedShapes;
+}
 
 
 
