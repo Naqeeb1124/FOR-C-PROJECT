@@ -15,5 +15,6 @@ public:
     void stop();
     bool isTimerRunning() const;
     std::chrono::seconds getRemainingTime() const;
+    bool isSecondpassed() const;
 };
 
