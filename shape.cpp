@@ -16,29 +16,12 @@ void shape::setRefPoint(point p)
 	RefPoint = p;
 }
 
-void shape::move(direction dir)
-{	
-	switch (dir)
-	{
-	case right:
-		RefPoint.x += config.gridSpacing;
-		break;
-	case up:
-		RefPoint.y += config.gridSpacing;
-		break;
-	case left:
-		RefPoint.x -= config.gridSpacing;
-		break;
-	case down:
-		RefPoint.y -= config.gridSpacing;
-		break;
-	}
 
-}
+
+
 
 point shape::multiplyByMatrix(point& p)
 {
-	//will be changed once approval for cmath is obtained.
 	int newX = -p.y;
 	int newY = p.x;
 	point newP = { newX,newY };
@@ -51,7 +34,28 @@ point shape::getRefPoint()
 	return RefPoint;
 }
 
-int shape::getStepCount() const 
+int shape::getStepCount() const
 {
 	return stepCount;
+}
+
+void shape::move(direction dir)
+{
+	point newRef{};
+	switch (dir)
+	{
+	case Up:
+		newRef.y = RefPoint.y - config.gridSpacing;
+		break;
+	case Down:
+		newRef.y = RefPoint.y + config.gridSpacing;
+		break;
+	case Left:
+		newRef.x = RefPoint.x - config.gridSpacing;
+		break;
+	case Right:
+		newRef.x = RefPoint.x + config.gridSpacing;
+		break;
+	}
+	this->setRefPoint(newRef);
 }
