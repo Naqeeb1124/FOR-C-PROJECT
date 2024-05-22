@@ -109,6 +109,7 @@ public:
 };
 
 //---------------------------
+
 class operRefresh :public operation
 {
 public:
@@ -161,10 +162,11 @@ public:
 	virtual void Act();
 };
 
+//--------------------------------
 
-
-class move_shape :public operation {
+class operExit :public operation
+{
 public:
-	move_shape(game* r_pGame);
+	operExit(game* r_game);
 	virtual void Act();
 };
