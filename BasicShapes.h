@@ -1,7 +1,6 @@
 //Header file for Basic shapes in the game
 #pragma once
 #include "shape.h"
-#include <fstream>
 
 ////////////////////////////////////////////////////  class Rect  ///////////////////////////////////////
 //Rectanle class
@@ -14,20 +13,22 @@
 */
 //Reference point of the rectangle is at the centre of it
 
-class Rect:public shape
+class Rect :public shape
 {
 	int hght, wdth;	//height and width of the recangle
+	color c;
 public:
 	Rect(game* r_pGame, point ref, int r_hght, int r_wdth);
-	virtual void setFillColor(color c);
-	virtual void save(ofstream& OutFile)const;
 	virtual void draw() const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
-	bool matches(const shape* target) const;
-virtual bool check_boundries();
+	virtual void move(direction dir);
+	bool matches(const shape* target) const override;
+
+
+
 
 };
 
@@ -38,16 +39,15 @@ class circle :public shape
 {
 	//Add data memebrs for class circle
 	int rad;
-public:	
-	circle(game* r_pGame, point ref, int r);
-	void save(ofstream& OutFile) const;
-	virtual void setFillColor(color c);//add more parameters for the constructor if needed
+public:
+	circle(game* r_pGame, point ref, int r);	//add more parameters for the constructor if needed
 	virtual void draw() const;
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
 	virtual void rotate();
-virtual bool check_boundries();
+	virtual void move(direction dir);
+	bool matches(const shape* target) const;
 
 };
 
@@ -57,25 +57,25 @@ virtual bool check_boundries();
 class triangle :public shape
 {
 	//Add data memebrs for class triangle
-	point vertex1,vertex2,vertex3;
-	double length_side_1;
-	double length_side_2;	
-	double length_side_3;
+	point vertex1, vertex2, vertex3;
+	double length_side_1 = 0;
+	double length_side_2 = 0;
+	double length_side_3 = 0;
 public:
-	triangle(game* r_pGame, point ref, point r_vert2,point r_vert3);	//add more parameters for the constructor if needed
-	virtual void setFillColor(color c);	//add more parameters for the constructor if needed
+	triangle(game* r_pGame, point ref, point r_vert2, point r_vert3);	//add more parameters for the constructor if needed
 	virtual void draw() const;
-	virtual void save(ofstream& OutFile)const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
-virtual bool check_boundries();
-	point getVert2();
-	point getVert3();
-	point getvert1();
-	point setvert3(point vert);
-	point setvert2(point vert);
+	virtual void move(direction dir);
+
+	point getVert2() const;
+	point getVert3() const;
+	void setvert1(point v);
+	void setvert3(point vert);
+	void setvert2(point vert);
+	bool matches(const shape* target) const;
 
 
 
@@ -90,51 +90,18 @@ class line :public shape
 
 public:
 	line(game* r_pGame, point ref, point Length);	//add more parameters for the constructor if needed
-		virtual void setFillColor(color c);	//add more parameters for the constructor if needed
 	virtual void draw() const;
-	virtual void save(ofstream& OutFile)const;
 	virtual void rotate();
 	virtual void resize_up();
 	virtual void resize_down();
 	virtual void flip();
-virtual bool check_boundries();
-	point getPoint2();
-
-};
-
-////////////////////////////////////////////////////  class polygon  ///////////////////////////////////////
-//Reference point of the polygon is at the centre of the height taken from the centre of the base
-class polygon :public shape
-{
-	//Add data memebrs for class polygon
-	int Pline1;
-	int Pline2;
-	int hght;
-	point vertex1;
-	point vertex2;
-	point vertex3;
-	point vertex4;
-public:
-	polygon(game* r_pGame, point ref, int r_pline1,int r_pline2,int r_hght);	//add more parameters for the constructor if needed
-	virtual void draw() const;
-	virtual void setFillColor(color c);
-	virtual void save(ofstream& OutFile)const;
-	virtual void rotate();
-	virtual void resize_up();
-	virtual void resize_down();
-	virtual void flip();
-	virtual bool check_boundries();
-	point setV1(point p);
-	point setV2(point p);
-	point setV3(point p);
-	point setV4(point p);
-	point getV1() const;
-	point getV2() const;
-	point getV3() const;
-	point getV4() const;
+	virtual void move(direction dir);
+	point getPoint2() const;
+	void setPoint2(point p);
 	bool matches(const shape* target) const;
 
 
-
 };
+
+
 
