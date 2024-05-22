@@ -5,12 +5,12 @@
 
 ////////////////////////////////////////////////////  class toolbar   //////////////////////////////////////////////
 toolbar::toolbar(game* pG)
-{	
+{
 	height = config.toolBarHeight;
 	width = config.windWidth;
 	this->pGame = pG;
 	window* pWind = pGame->getWind();
-	
+
 	//You can draw the tool bar icons in any way you want.
 
 	//First prepare List of images for each toolbar item
@@ -33,7 +33,7 @@ toolbar::toolbar(game* pG)
 	toolbarItemImages[ITM_LOAD] = "Icons\\9.jpg";
 	toolbarItemImages[ITM_SELECTLEVEL] = "Icons\\10.jpg";
 	toolbarItemImages[ITM_EXIT] = "Icons\\11.jpg";
-	
+
 
 	//Draw toolbar item one image at a time
 	for (int i = 0; i < ITM_CNT; i++)
@@ -42,52 +42,23 @@ toolbar::toolbar(game* pG)
 
 	//Draw a line under the toolbar
 	pWind->SetPen(DARKBLUE, 3);
-	pWind->DrawLine(0, height,width , height);
+	pWind->DrawLine(0, height, width, height);
 
 	//Draw Lives/ Score/ Level
-	//int level = 1;
-	//int lives = 5;
-	//int score = 0;
-	//--Draw Lives--
-	string sLives = "Lives: " + to_string(lives);
-	int XLives = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
-	int YLives = 0 ;
-	pWind->SetPen(BLACK, 1);
-	pWind->SetFont(20, BOLD, BY_NAME, "Arial");
-	pWind->DrawString(XLives, YLives, sLives);
-
-	//--Draw Score--
-	string sScore = "Score: " + to_string(score);
-	int XScore = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
-	int YScore = config.toolBarHeight/3 ;
-	pWind->SetPen(BLACK,1);
-	pWind->SetFont(20, BOLD, BY_NAME, "Arial");
-	pWind->DrawString(XScore, YScore, sScore);
-
-	//--Draw Level--
-	string sLevel = "Level: " + to_string(level);
-	int XLevel = (((config.windWidth - (config.toolbarItemWidth * (ITM_CNT - 1))) / 2) + (config.toolbarItemWidth * (ITM_CNT - 1)));
-	int YLevel = (2*config.toolBarHeight) / 3;
-	pWind->SetPen(BLACK,1);
-	pWind->SetFont(20, BOLD, BY_NAME, "Arial");
-	pWind->DrawString(XLevel, YLevel, sLevel);
-}
+	pGame->DrawLevelScoreLives();
 
 
-int toolbar::getlevel() const
-{
-	return level;
 }
 
 
 //handles clicks on toolbar icons, returns ITM_CNT if the click is not inside the toolbar
 toolbarItem toolbar::getItemClicked(int x)
 {
-	
+
 	if (x > ITM_CNT * config.toolbarItemWidth)	//click outside toolbar boundaries
 		return ITM_CNT;
-	
-	
+
+
 	//Check whick toolbar item was clicked
 	//==> This assumes that toolbar items are lined up horizontally <==
 	//Divide x coord of the point clicked by the icon width (int division)
@@ -95,8 +66,4 @@ toolbarItem toolbar::getItemClicked(int x)
 
 	return (toolbarItem)(x / config.toolbarItemWidth);
 
-}
-
-int toolbar::getScore() const{
-	return score;
 }
